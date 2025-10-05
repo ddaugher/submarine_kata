@@ -40,9 +40,9 @@ defmodule SubmarineKata.SubmarineContextTest do
       assert SubmarineContext.execute_course(commands) == {:error, :invalid_command}
     end
 
-    test "returns error for invalid amount" do
+    test "handles negative amounts" do
       commands = ["forward 5", "down -3", "up 2"]
-      assert SubmarineContext.execute_course(commands) == {:error, :invalid_command}
+      assert SubmarineContext.execute_course(commands) == {:ok, %{horizontal: 5, depth: 0}}
     end
 
     test "handles course that goes above surface" do

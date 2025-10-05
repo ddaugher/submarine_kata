@@ -59,6 +59,20 @@ defmodule SubmarineKata.SubmarineTest do
 
       assert new_submarine == %{horizontal: 1000, depth: 0}
     end
+
+    test "moves submarine forward by negative amount (backward)" do
+      submarine = Submarine.new(10, 5)
+      new_submarine = Submarine.forward(submarine, -3)
+
+      assert new_submarine == %{horizontal: 7, depth: 5}
+    end
+
+    test "moves submarine forward by negative amount cannot go below zero" do
+      submarine = Submarine.new(5, 10)
+      new_submarine = Submarine.forward(submarine, -10)
+
+      assert new_submarine == %{horizontal: 0, depth: 10}
+    end
   end
 
   describe "down/2" do
@@ -88,6 +102,20 @@ defmodule SubmarineKata.SubmarineTest do
       new_submarine = Submarine.down(submarine, 500)
 
       assert new_submarine == %{horizontal: 0, depth: 500}
+    end
+
+    test "moves submarine down by negative amount (up)" do
+      submarine = Submarine.new(0, 10)
+      new_submarine = Submarine.down(submarine, -3)
+
+      assert new_submarine == %{horizontal: 0, depth: 7}
+    end
+
+    test "moves submarine down by negative amount cannot go below zero" do
+      submarine = Submarine.new(0, 5)
+      new_submarine = Submarine.down(submarine, -10)
+
+      assert new_submarine == %{horizontal: 0, depth: 0}
     end
   end
 
@@ -132,6 +160,13 @@ defmodule SubmarineKata.SubmarineTest do
       new_submarine = Submarine.up(submarine, 5)
 
       assert new_submarine == %{horizontal: 0, depth: 0}
+    end
+
+    test "moves submarine up by negative amount (down)" do
+      submarine = Submarine.new(0, 5)
+      new_submarine = Submarine.up(submarine, -3)
+
+      assert new_submarine == %{horizontal: 0, depth: 8}
     end
   end
 

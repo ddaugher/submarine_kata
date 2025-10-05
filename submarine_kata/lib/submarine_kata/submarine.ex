@@ -46,10 +46,9 @@ defmodule SubmarineKata.Submarine do
       %{horizontal: 5, depth: 0}
 
   """
-  @spec forward(position(), integer()) :: position()
-  def forward(position, amount) do
-    new_horizontal = max(0, position.horizontal + amount)
-    %{position | horizontal: new_horizontal}
+  @spec forward(position(), non_neg_integer()) :: position()
+  def forward(position, amount) when amount >= 0 do
+    %{position | horizontal: position.horizontal + amount}
   end
 
   @doc """
@@ -62,10 +61,9 @@ defmodule SubmarineKata.Submarine do
       %{horizontal: 0, depth: 3}
 
   """
-  @spec down(position(), integer()) :: position()
-  def down(position, amount) do
-    new_depth = max(0, position.depth + amount)
-    %{position | depth: new_depth}
+  @spec down(position(), non_neg_integer()) :: position()
+  def down(position, amount) when amount >= 0 do
+    %{position | depth: position.depth + amount}
   end
 
   @doc """
@@ -78,8 +76,8 @@ defmodule SubmarineKata.Submarine do
       %{horizontal: 0, depth: 7}
 
   """
-  @spec up(position(), integer()) :: position()
-  def up(position, amount) do
+  @spec up(position(), non_neg_integer()) :: position()
+  def up(position, amount) when amount >= 0 do
     new_depth = max(0, position.depth - amount)
     %{position | depth: new_depth}
   end

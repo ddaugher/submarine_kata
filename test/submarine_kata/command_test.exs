@@ -35,7 +35,6 @@ defmodule SubmarineKata.CommandTest do
     end
 
     test "returns error for invalid amount" do
-      assert Command.parse("forward -1") == {:error, :invalid_amount}
       assert Command.parse("down abc") == {:error, :invalid_amount}
       assert Command.parse("up 3.5") == {:error, :invalid_amount}
     end
@@ -47,10 +46,10 @@ defmodule SubmarineKata.CommandTest do
       assert Command.parse("   ") == {:error, :invalid_command}
     end
 
-    test "returns error for negative amounts" do
-      assert Command.parse("forward -5") == {:error, :invalid_amount}
-      assert Command.parse("down -10") == {:error, :invalid_amount}
-      assert Command.parse("up -1") == {:error, :invalid_amount}
+    test "parses negative amounts" do
+      assert Command.parse("forward -5") == {:ok, %{type: :forward, amount: -5}}
+      assert Command.parse("down -10") == {:ok, %{type: :down, amount: -10}}
+      assert Command.parse("up -1") == {:ok, %{type: :up, amount: -1}}
     end
   end
 
@@ -82,9 +81,14 @@ defmodule SubmarineKata.CommandTest do
       assert Command.parse_multiple(commands) == {:error, :invalid_command}
     end
 
-    test "returns error if any amount is invalid" do
+    test "parses commands with negative amounts" do
       commands = ["forward 5", "down -3", "up 2"]
-      assert Command.parse_multiple(commands) == {:error, :invalid_command}
+      expected = [
+        %{type: :forward, amount: 5},
+        %{type: :down, amount: -3},
+        %{type: :up, amount: 2}
+      ]
+      assert Command.parse_multiple(commands) == {:ok, expected}
     end
   end
 

@@ -3,11 +3,11 @@ defmodule SubmarineKata.Command do
   Handles parsing and validation of submarine movement commands.
 
   Commands follow the format: "direction amount" where direction is
-  one of: forward, down, up, and amount is a non-negative integer.
+  one of: forward, down, up, and amount is an integer (positive or negative).
   """
 
   @type command_type :: :forward | :down | :up
-  @type command :: %{type: command_type(), amount: non_neg_integer()}
+  @type command :: %{type: command_type(), amount: integer()}
 
   @doc """
   Parses a command string into a command struct.
@@ -103,10 +103,10 @@ defmodule SubmarineKata.Command do
   defp parse_direction("up"), do: {:ok, :up}
   defp parse_direction(_), do: {:error, :invalid_command}
 
-  @spec parse_amount(String.t()) :: {:ok, non_neg_integer()} | {:error, :invalid_amount}
+  @spec parse_amount(String.t()) :: {:ok, integer()} | {:error, :invalid_amount}
   defp parse_amount(amount_str) do
     case Integer.parse(amount_str) do
-      {amount, ""} when amount >= 0 -> {:ok, amount}
+      {amount, ""} -> {:ok, amount}
       _ -> {:error, :invalid_amount}
     end
   end

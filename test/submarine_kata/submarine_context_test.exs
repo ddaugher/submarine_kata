@@ -207,8 +207,8 @@ defmodule SubmarineKata.SubmarineContextTest do
     end
 
     test "handles large amounts" do
-      commands = ["forward 1000000", "down 1000000"]
-      assert SubmarineContext.execute_course(commands) == {:ok, %{horizontal: 1000000, depth: 1000000}}
+      commands = ["forward 1_000_000", "down 1_000_000"]
+      assert SubmarineContext.execute_course(commands) == {:ok, %{horizontal: 1_000_000, depth: 0, aim: 1_000_000}}
     end
 
     test "handles many commands" do

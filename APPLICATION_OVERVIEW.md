@@ -6,8 +6,8 @@ This document provides a comprehensive overview of the Submarine Kata applicatio
 
 ## Version History
 
-- **Part 1** - Basic submarine navigation with forward/down/up commands
-- **Part 2** - *[To be implemented]* - Enhanced navigation with aim-based commands  
+- **Part 1** - Basic submarine navigation with forward/down/up commands ✅
+- **Part 2** - Enhanced navigation with aim-based commands ✅
 - **Part 3** - *[To be implemented]* - Advanced submarine operations
 
 ## Application Purpose
@@ -21,15 +21,16 @@ The application processes a series of navigation commands and calculates the fin
 ## Core Concepts
 
 ### 1. Submarine Position
-A submarine has two position coordinates:
+A submarine has three position coordinates:
 - **Horizontal Position**: Distance from starting point (integer, can be negative for backward movement)
 - **Depth**: Distance from surface (integer, negative = above water, 0 = surface, positive = below water)
+- **Aim**: Current aim direction (integer, positive = aiming down, negative = aiming up)
 
-### 2. Navigation Commands
-Three types of movement commands:
-- **`forward X`**: Move forward X units (increases horizontal position, negative X = backward)
-- **`down X`**: Dive down X units (increases depth, negative X = surface up)
-- **`up X`**: Surface up X units (decreases depth, can go above water surface)
+### 2. Navigation Commands (Part 2 Enhanced)
+Three types of movement commands with enhanced Part 2 behavior:
+- **`forward X`**: Move forward X units AND change depth by aim × X (increases horizontal position)
+- **`down X`**: Increase aim by X units (changes aim direction, does not directly change depth)
+- **`up X`**: Decrease aim by X units (changes aim direction, does not directly change depth)
 
 ### 3. Course Execution
 A course is a sequence of commands that the submarine follows to reach a final position.
@@ -43,7 +44,7 @@ Execute a simple course and get the final position:
 ```elixir
 commands = ["forward 5", "down 3", "forward 2"]
 {:ok, position} = SubmarineKata.execute_course(commands)
-# Returns: {:ok, %{horizontal: 7, depth: 3}}
+# Returns: {:ok, %{horizontal: 7, depth: 6, aim: 3}}
 ```
 
 ### 2. Position Product Calculation
@@ -160,21 +161,40 @@ IO.puts("Surface exploration: #{inspect(position)}")
 # Output: Surface exploration: %{horizontal: 175, depth: -5}
 ```
 
-### Example 5: Negative Values
+### Example 5: Part 2 Kata Example
 
 ```elixir
-# Course demonstrating negative values
+# The official Part 2 kata example
+kata_course = [
+  "forward 5",    # h=5, d=0, aim=0
+  "down 5",       # h=5, d=0, aim=5
+  "forward 8",    # h=13, d=40, aim=5 (depth += 8*5)
+  "up 3",         # h=13, d=40, aim=2
+  "down 8",       # h=13, d=40, aim=10
+  "forward 2"     # h=15, d=60, aim=10 (depth += 2*10)
+]
+
+{:ok, position} = SubmarineKata.execute_course(kata_course)
+IO.puts("Part 2 Kata: #{inspect(position)}")
+# Output: Part 2 Kata: %{horizontal: 15, depth: 60, aim: 10}
+# Product: 15 × 60 = 900
+```
+
+### Example 6: Negative Values
+
+```elixir
+# Course demonstrating negative values with Part 2
 negative_course = [
-  "forward 10",   # Move forward to position 10
-  "down 5",       # Dive to depth 5
-  "forward -3",   # Move backward to position 7
-  "up 8",         # Surface and go above water (depth -3)
-  "down -2"       # Surface up more (depth -5)
+  "forward 10",   # h=10, d=0, aim=0
+  "down 5",       # h=10, d=0, aim=5
+  "forward -3",   # h=7, d=-15, aim=5 (depth += -3*5)
+  "up 8",         # h=7, d=-15, aim=-3
+  "down -2"       # h=7, d=-15, aim=-5
 ]
 
 {:ok, position} = SubmarineKata.execute_course(negative_course)
 IO.puts("Negative values: #{inspect(position)}")
-# Output: Negative values: %{horizontal: 7, depth: -5}
+# Output: Negative values: %{horizontal: 7, depth: -15, aim: -5}
 ```
 
 ## Error Scenarios

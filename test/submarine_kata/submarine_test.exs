@@ -289,7 +289,6 @@ defmodule SubmarineKata.SubmarineTest do
         {:forward, 6}
       ]
 
-
       final_submarine = Enum.reduce(movements, submarine, fn {action, amount}, sub ->
         case action do
           :forward -> Submarine.forward(sub, amount)

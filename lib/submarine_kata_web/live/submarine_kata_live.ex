@@ -261,41 +261,41 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                 <div class="space-y-4">
               <%= case @current_step do %>
                 <% :intro -> %>
-                  <div class="alert alert-info">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  <div class="alert bg-slate-50 border-slate-200 text-slate-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6 text-slate-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span>Ready to start the submarine navigation visualization!</span>
                   </div>
 
                 <% :loading_data -> %>
-                  <div class="alert alert-warning">
-                    <span class="loading loading-spinner loading-sm"></span>
+                  <div class="alert bg-gray-50 border-gray-200 text-gray-700">
+                    <span class="loading loading-spinner loading-sm text-gray-600"></span>
                     <span>Loading scanner data from input files...</span>
                   </div>
 
                   <!-- Detailed Loading Activity -->
                   <div class="space-y-4">
                     <div class="steps steps-vertical lg:steps-horizontal">
-                      <div class="step step-primary">📁 Loading scanner_data.json</div>
-                      <div class="step step-primary">📋 Loading input_data.txt</div>
-                      <div class="step step-primary">🔍 Parsing navigation commands</div>
-                      <div class="step step-primary">🚢 Initializing submarine</div>
+                      <div class="step step-primary text-gray-700">📁 Loading scanner_data.json</div>
+                      <div class="step step-primary text-gray-700">📋 Loading input_data.txt</div>
+                      <div class="step step-primary text-gray-700">🔍 Parsing navigation commands</div>
+                      <div class="step step-primary text-gray-700">🚢 Initializing submarine</div>
                     </div>
 
-                    <div class="stats stats-horizontal shadow">
-                      <div class="stat">
-                        <div class="stat-title">Scanner Coordinates</div>
-                        <div class="stat-value text-primary"><%= map_size(@scanner_data) %></div>
-                        <div class="stat-desc">Available scan points</div>
+                    <div class="stats stats-horizontal shadow-sm bg-white border border-gray-200">
+                      <div class="stat bg-gray-50 rounded-lg">
+                        <div class="stat-title text-gray-600">Scanner Coordinates</div>
+                        <div class="stat-value text-gray-800"><%= map_size(@scanner_data) %></div>
+                        <div class="stat-desc text-gray-500">Available scan points</div>
                       </div>
-                      <div class="stat">
-                        <div class="stat-title">Navigation Commands</div>
-                        <div class="stat-value text-secondary"><%= length(@navigation_commands) %></div>
-                        <div class="stat-desc">Commands to execute</div>
+                      <div class="stat bg-gray-50 rounded-lg">
+                        <div class="stat-title text-gray-600">Navigation Commands</div>
+                        <div class="stat-value text-gray-800"><%= length(@navigation_commands) %></div>
+                        <div class="stat-desc text-gray-500">Commands to execute</div>
                       </div>
-                      <div class="stat">
-                        <div class="stat-title">Data Size</div>
-                        <div class="stat-value text-accent"><%= trunc(byte_size(Jason.encode!(@scanner_data)) / 1024) %>KB</div>
-                        <div class="stat-desc">Scanner data loaded</div>
+                      <div class="stat bg-gray-50 rounded-lg">
+                        <div class="stat-title text-gray-600">Data Size</div>
+                        <div class="stat-value text-gray-800"><%= trunc(byte_size(Jason.encode!(@scanner_data)) / 1024) %>KB</div>
+                        <div class="stat-desc text-gray-500">Scanner data loaded</div>
                       </div>
                     </div>
 
@@ -340,20 +340,20 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                   </div>
 
                 <% :navigating -> %>
-                  <div class="alert alert-info">
-                    <span class="loading loading-spinner loading-sm"></span>
+                  <div class="alert bg-gray-50 border-gray-200 text-gray-700">
+                    <span class="loading loading-spinner loading-sm text-gray-600"></span>
                     <span>🚢 Submarine is navigating through the ocean...</span>
                   </div>
 
                   <!-- Enhanced Visual Navigation -->
                   <div class="space-y-6">
                     <!-- Progress Bar -->
-                    <div class="w-full">
+                    <div class="w-full bg-gray-50 p-4 rounded-lg border border-gray-200">
                       <div class="flex justify-between text-sm mb-2">
-                        <span>Navigation Progress</span>
-                        <span><%= trunc(@command_index / @total_commands * 100) %>% Complete</span>
+                        <span class="text-gray-700">Navigation Progress</span>
+                        <span class="text-gray-600"><%= trunc(@command_index / @total_commands * 100) %>% Complete</span>
                       </div>
-                      <progress class="progress progress-primary w-full" value={@command_index} max={@total_commands}></progress>
+                      <progress class="progress w-full" value={@command_index} max={@total_commands}></progress>
                       <div class="flex justify-between text-xs text-gray-500 mt-1">
                         <span>Command <%= @command_index %> of <%= @total_commands %></span>
                         <span><%= @total_commands - @command_index %> remaining</span>
@@ -361,70 +361,55 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                     </div>
 
                     <!-- Visual Submarine Position -->
-                    <div class="card bg-gradient-to-r from-blue-100 to-cyan-100 shadow-lg">
+                    <div class="card bg-white shadow-sm border border-gray-200">
                       <div class="card-body">
-                        <h3 class="card-title text-lg">🚢 Submarine Position</h3>
+                        <h3 class="card-title text-lg text-gray-800">Submarine Position</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div class="stat bg-white rounded-lg shadow">
-                            <div class="stat-figure text-primary">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">Horizontal</div>
-                            <div class="stat-value text-primary">
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">Horizontal</div>
+                            <div class="stat-value text-gray-800">
                               <%= if @current_position do %>
                                 <%= @current_position.horizontal %>
                               <% else %>
                                 0
                               <% end %>
                             </div>
-                            <div class="stat-desc">Forward distance</div>
+                            <div class="stat-desc text-gray-500">Forward distance</div>
                           </div>
 
-                          <div class="stat bg-white rounded-lg shadow">
-                            <div class="stat-figure text-secondary">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">Depth</div>
-                            <div class="stat-value text-secondary">
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">Depth</div>
+                            <div class="stat-value text-gray-800">
                               <%= if @current_position do %>
                                 <%= @current_position.depth %>
                               <% else %>
                                 0
                               <% end %>
                             </div>
-                            <div class="stat-desc">Down distance</div>
+                            <div class="stat-desc text-gray-500">Down distance</div>
                           </div>
 
-                          <div class="stat bg-white rounded-lg shadow">
-                            <div class="stat-figure text-accent">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">Aim</div>
-                            <div class="stat-value text-accent">
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">Aim</div>
+                            <div class="stat-value text-gray-800">
                               <%= if @current_position do %>
                                 <%= @current_position.aim %>
                               <% else %>
                                 0
                               <% end %>
                             </div>
-                            <div class="stat-desc">Target angle</div>
+                            <div class="stat-desc text-gray-500">Target angle</div>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <!-- Current Command with Animation -->
-                    <div class="card bg-gradient-to-r from-purple-100 to-pink-100 shadow-lg">
+                    <div class="card bg-white shadow-sm border border-gray-200">
                       <div class="card-body">
-                        <h3 class="card-title text-lg">📋 Current Command</h3>
+                        <h3 class="card-title text-lg text-gray-800">Current Command</h3>
                         <div class="flex items-center space-x-4">
-                          <div class="badge badge-lg badge-primary animate-pulse">
+                          <div class="badge badge-lg bg-gray-600 text-white">
                             <%= if @command_index < @total_commands do %>
                               Executing
                             <% else %>
@@ -432,11 +417,11 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                             <% end %>
                           </div>
                           <div class="flex-1">
-                            <div class="bg-white p-4 rounded-lg shadow font-mono text-lg">
+                            <div class="bg-gray-50 p-4 rounded-lg font-mono text-lg">
                               <%= if @command_index < @total_commands do %>
-                                <span class="text-blue-600 font-bold"><%= Enum.at(@navigation_commands, @command_index) %></span>
+                                <span class="text-gray-700 font-bold"><%= Enum.at(@navigation_commands, @command_index) %></span>
                               <% else %>
-                                <span class="text-green-600 font-bold">🎉 All commands completed!</span>
+                                <span class="text-gray-600 font-bold">All commands completed!</span>
                               <% end %>
                             </div>
                           </div>
@@ -445,58 +430,43 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                     </div>
 
                     <!-- Map Building Progress -->
-                    <div class="card bg-gradient-to-r from-green-100 to-teal-100 shadow-lg">
+                    <div class="card bg-white shadow-sm border border-gray-200">
                       <div class="card-body">
-                        <h3 class="card-title text-lg">🗺️ Map Reconstruction</h3>
+                        <h3 class="card-title text-lg text-gray-800">Map Reconstruction</h3>
                         <div class="stats stats-horizontal">
-                          <div class="stat">
-                            <div class="stat-figure text-green-600">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">Cells Scanned</div>
-                            <div class="stat-value text-green-600"><%= map_size(@current_map) %></div>
-                            <div class="stat-desc">Map growing...</div>
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">Cells Scanned</div>
+                            <div class="stat-value text-gray-800"><%= map_size(@current_map) %></div>
+                            <div class="stat-desc text-gray-500">Map growing...</div>
                           </div>
-                          <div class="stat">
-                            <div class="stat-figure text-blue-600">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">Scan Rate</div>
-                            <div class="stat-value text-blue-600">~100/sec</div>
-                            <div class="stat-desc">10ms per command</div>
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">Scan Rate</div>
+                            <div class="stat-value text-gray-800">~100/sec</div>
+                            <div class="stat-desc text-gray-500">10ms per command</div>
                           </div>
-                          <div class="stat">
-                            <div class="stat-figure text-purple-600">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">ETA</div>
-                            <div class="stat-value text-purple-600">
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">ETA</div>
+                            <div class="stat-value text-gray-800">
                               <%= trunc((@total_commands - @command_index) * 10 / 1000) %>s
                             </div>
-                            <div class="stat-desc">Time remaining</div>
+                            <div class="stat-desc text-gray-500">Time remaining</div>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <!-- Mini Map Preview -->
-                    <div class="card bg-gray-900 shadow-lg">
+                    <div class="card bg-white shadow-sm border border-gray-200">
                       <div class="card-body">
-                        <h3 class="card-title text-lg text-white">🌊 Ocean Depth View</h3>
-                        <div class="bg-black p-4 rounded-lg font-mono text-green-400 text-xs max-h-[500px] overflow-y-auto" style="white-space: pre;">
+                        <h3 class="card-title text-lg text-gray-800">Ocean Depth View</h3>
+                        <div class="bg-gray-900 p-4 rounded-lg font-mono text-green-400 text-xs max-h-[500px] overflow-y-auto border border-gray-300" style="white-space: pre;">
                           <%= if map_size(@current_map) > 0 do %>
                             <%= SubmarineKata.Scanner.render_map(@current_map) %>
                           <% else %>
-                            <div class="text-yellow-400">🔄 Initializing map...</div>
+                            <div class="text-yellow-400">Initializing map...</div>
                           <% end %>
                         </div>
-                        <div class="text-xs text-gray-400 mt-2">
+                        <div class="text-xs text-gray-600 mt-2">
                           Real-time map reconstruction - <%= map_size(@current_map) %> cells discovered
                         </div>
                       </div>
@@ -504,8 +474,8 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                   </div>
 
                 <% :reconstructing -> %>
-                  <div class="alert alert-success">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <div class="alert bg-gray-50 border-gray-200 text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     <span>Navigation complete! Rendering final map...</span>
                   </div>
                   <div class="text-sm text-gray-600">
@@ -520,96 +490,81 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                   </div>
 
                 <% :complete -> %>
-                  <div class="alert alert-success">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <div class="alert bg-emerald-50 border-emerald-200 text-emerald-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     <span>🎉 Mission Complete! Map reconstruction finished with <%= map_size(@current_map) %> cells discovered.</span>
                   </div>
 
                   <!-- Keep All Visual Elements + Final Results -->
                   <div class="space-y-6">
                     <!-- Final Progress Bar (100% Complete) -->
-                    <div class="w-full">
+                    <div class="w-full bg-gray-50 p-4 rounded-lg border border-gray-200">
                       <div class="flex justify-between text-sm mb-2">
-                        <span>Navigation Progress</span>
-                        <span class="text-green-600 font-bold">100% Complete ✅</span>
+                        <span class="text-gray-700">Navigation Progress</span>
+                        <span class="text-gray-600">100% Complete</span>
                       </div>
-                      <progress class="progress progress-success w-full" value={@total_commands} max={@total_commands}></progress>
+                      <progress class="progress w-full" value={@total_commands} max={@total_commands}></progress>
                       <div class="flex justify-between text-xs text-gray-500 mt-1">
                         <span>Command <%= @total_commands %> of <%= @total_commands %></span>
-                        <span class="text-green-600">Mission accomplished! 🚢</span>
+                        <span>Mission accomplished</span>
                       </div>
                     </div>
 
                     <!-- Final Submarine Position -->
-                    <div class="card bg-gradient-to-r from-green-100 to-blue-100 shadow-lg border-2 border-green-400">
+                    <div class="card bg-white shadow-sm border border-gray-200">
                       <div class="card-body">
-                        <h3 class="card-title text-lg">🚢 Final Submarine Position</h3>
+                        <h3 class="card-title text-lg text-gray-800">Final Submarine Position</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div class="stat bg-white rounded-lg shadow">
-                            <div class="stat-figure text-primary">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">Final Horizontal</div>
-                            <div class="stat-value text-primary">
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">Final Horizontal</div>
+                            <div class="stat-value text-gray-800">
                               <%= if @current_position do %>
                                 <%= @current_position.horizontal %>
                               <% else %>
                                 0
                               <% end %>
                             </div>
-                            <div class="stat-desc">Total forward distance</div>
+                            <div class="stat-desc text-gray-500">Total forward distance</div>
                           </div>
 
-                          <div class="stat bg-white rounded-lg shadow">
-                            <div class="stat-figure text-secondary">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">Final Depth</div>
-                            <div class="stat-value text-secondary">
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">Final Depth</div>
+                            <div class="stat-value text-gray-800">
                               <%= if @current_position do %>
                                 <%= @current_position.depth %>
                               <% else %>
                                 0
                               <% end %>
                             </div>
-                            <div class="stat-desc">Total down distance</div>
+                            <div class="stat-desc text-gray-500">Total down distance</div>
                           </div>
 
-                          <div class="stat bg-white rounded-lg shadow">
-                            <div class="stat-figure text-accent">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">Final Aim</div>
-                            <div class="stat-value text-accent">
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">Final Aim</div>
+                            <div class="stat-value text-gray-800">
                               <%= if @current_position do %>
                                 <%= @current_position.aim %>
                               <% else %>
                                 0
                               <% end %>
                             </div>
-                            <div class="stat-desc">Final target angle</div>
+                            <div class="stat-desc text-gray-500">Final target angle</div>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <!-- Mission Complete Status -->
-                    <div class="card bg-gradient-to-r from-purple-100 to-pink-100 shadow-lg">
+                    <div class="card bg-white shadow-sm border border-gray-200">
                       <div class="card-body">
-                        <h3 class="card-title text-lg">🎉 Mission Status</h3>
+                        <h3 class="card-title text-lg text-gray-800">Mission Status</h3>
                         <div class="flex items-center space-x-4">
-                          <div class="badge badge-lg badge-success animate-pulse">
-                            Complete ✅
+                          <div class="badge badge-lg bg-gray-600 text-white">
+                            Complete
                           </div>
                           <div class="flex-1">
-                            <div class="bg-white p-4 rounded-lg shadow font-mono text-lg">
-                              <span class="text-green-600 font-bold">🎉 All <%= @total_commands %> commands executed successfully!</span>
+                            <div class="bg-gray-50 p-4 rounded-lg font-mono text-lg">
+                              <span class="text-gray-700">All <%= @total_commands %> commands executed successfully</span>
                             </div>
                           </div>
                         </div>
@@ -617,62 +572,47 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                     </div>
 
                     <!-- Final Results Summary -->
-                    <div class="card bg-gradient-to-r from-green-100 to-teal-100 shadow-lg">
+                    <div class="card bg-white shadow-sm border border-gray-200">
                       <div class="card-body">
-                        <h3 class="card-title text-lg">🏆 Final Results</h3>
+                        <h3 class="card-title text-lg text-gray-800">Final Results</h3>
                         <div class="stats stats-horizontal">
-                          <div class="stat">
-                            <div class="stat-figure text-green-600">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">Total Cells</div>
-                            <div class="stat-value text-green-600"><%= map_size(@current_map) %></div>
-                            <div class="stat-desc">Map reconstruction complete</div>
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">Total Cells</div>
+                            <div class="stat-value text-gray-800"><%= map_size(@current_map) %></div>
+                            <div class="stat-desc text-gray-500">Map reconstruction complete</div>
                           </div>
-                          <div class="stat">
-                            <div class="stat-figure text-blue-600">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">Final Product</div>
-                            <div class="stat-value text-blue-600">
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">Final Product</div>
+                            <div class="stat-value text-gray-800">
                               <%= if @current_position do %>
                                 <%= @current_position.horizontal * @current_position.depth %>
                               <% else %>
                                 0
                               <% end %>
                             </div>
-                            <div class="stat-desc">Horizontal × Depth</div>
+                            <div class="stat-desc text-gray-500">Horizontal × Depth</div>
                           </div>
-                          <div class="stat">
-                            <div class="stat-figure text-purple-600">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                              </svg>
-                            </div>
-                            <div class="stat-title">Commands Executed</div>
-                            <div class="stat-value text-purple-600"><%= @total_commands %></div>
-                            <div class="stat-desc">Navigation complete</div>
+                          <div class="stat bg-gray-50 rounded-lg">
+                            <div class="stat-title text-gray-600">Commands Executed</div>
+                            <div class="stat-value text-gray-800"><%= @total_commands %></div>
+                            <div class="stat-desc text-gray-500">Navigation complete</div>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <!-- Complete Map Display -->
-                    <div class="card bg-gray-900 shadow-lg">
+                    <div class="card bg-white shadow-sm border border-gray-200">
                       <div class="card-body">
-                        <h3 class="card-title text-lg text-white">🗺️ Complete Ocean Map</h3>
-                        <div class="bg-black p-4 rounded-lg font-mono text-green-400 text-xs max-h-[600px] overflow-y-auto" style="white-space: pre;">
+                        <h3 class="card-title text-lg text-gray-800">Complete Ocean Map</h3>
+                        <div class="bg-gray-900 p-4 rounded-lg font-mono text-green-400 text-xs max-h-[800px] overflow-y-auto border border-gray-300" style="white-space: pre;">
                           <%= if map_size(@current_map) > 0 do %>
                             <%= SubmarineKata.Scanner.render_map(@current_map) %>
                           <% else %>
-                            <div class="text-red-400">No map data available</div>
+                            <div class="text-red-400 text-center py-4">No map data available</div>
                           <% end %>
                         </div>
-                        <div class="text-xs text-gray-400 mt-2">
+                        <div class="text-sm text-gray-600 mt-2">
                           Complete map reconstruction - <%= map_size(@current_map) %> cells discovered and mapped
                         </div>
                       </div>
@@ -685,8 +625,8 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
 
           <!-- Error Display -->
           <%= if @execution_error do %>
-            <div class="alert alert-error">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <div class="alert bg-red-50 border-red-200 text-red-800">
+              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               <span>Execution Error: {@execution_error}</span>
             </div>
           <% end %>

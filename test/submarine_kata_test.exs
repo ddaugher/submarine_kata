@@ -6,11 +6,11 @@ defmodule SubmarineKataTest do
     test "executes kata example course" do
       commands = ["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"]
 
-      assert SubmarineKata.execute_course(commands) == {:ok, %{horizontal: 15, depth: 10}}
+      assert SubmarineKata.execute_course(commands) == {:ok, %{horizontal: 15, depth: 60, aim: 10}}
     end
 
     test "executes empty course" do
-      assert SubmarineKata.execute_course([]) == {:ok, %{horizontal: 0, depth: 0}}
+      assert SubmarineKata.execute_course([]) == {:ok, %{horizontal: 0, depth: 0, aim: 0}}
     end
 
     test "returns error for invalid course" do
@@ -23,7 +23,7 @@ defmodule SubmarineKataTest do
     test "executes kata example and calculates product" do
       commands = ["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"]
 
-      assert SubmarineKata.execute_course_and_calculate_product(commands) == {:ok, 150}
+      assert SubmarineKata.execute_course_and_calculate_product(commands) == {:ok, 900}
     end
 
     test "calculates product for empty course" do
@@ -40,7 +40,7 @@ defmodule SubmarineKataTest do
     test "executes course from text and calculates product" do
       course_text = "forward 5\ndown 5\nforward 8\nup 3\ndown 8\nforward 2"
 
-      assert SubmarineKata.execute_course_from_text_and_calculate_product(course_text) == {:ok, 150}
+      assert SubmarineKata.execute_course_from_text_and_calculate_product(course_text) == {:ok, 900}
     end
 
     test "calculates product from empty text" do

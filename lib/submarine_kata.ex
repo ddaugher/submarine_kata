@@ -15,7 +15,7 @@ defmodule SubmarineKata do
 
       iex> commands = ["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"]
       iex> SubmarineKata.execute_course(commands)
-      {:ok, %{horizontal: 15, depth: 10}}
+      {:ok, %{horizontal: 15, depth: 60, aim: 10}}
 
   """
   @spec execute_course(list(String.t())) :: {:ok, map()} | {:error, atom()}
@@ -30,7 +30,7 @@ defmodule SubmarineKata do
 
       iex> commands = ["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"]
       iex> SubmarineKata.execute_course_and_calculate_product(commands)
-      {:ok, 150}
+      {:ok, 900}
 
   """
   @spec execute_course_and_calculate_product(list(String.t())) :: {:ok, non_neg_integer()} | {:error, atom()}
@@ -45,7 +45,7 @@ defmodule SubmarineKata do
 
       iex> course_text = "forward 5\\ndown 5\\nforward 8\\nup 3\\ndown 8\\nforward 2"
       iex> SubmarineKata.execute_course_from_text_and_calculate_product(course_text)
-      {:ok, 150}
+      {:ok, 900}
 
   """
   @spec execute_course_from_text_and_calculate_product(String.t()) :: {:ok, non_neg_integer()} | {:error, atom()}

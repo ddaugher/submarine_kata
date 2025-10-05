@@ -6,8 +6,8 @@ This document describes the technical architecture of the Submarine Kata solutio
 
 ## Version History
 
-- **Part 1** - Basic submarine navigation with forward/down/up commands
-- **Part 2** - *[To be implemented]* - Enhanced navigation with aim-based commands
+- **Part 1** - Basic submarine navigation with forward/down/up commands ✅
+- **Part 2** - Enhanced navigation with aim-based commands ✅
 - **Part 3** - *[To be implemented]* - Advanced submarine operations
 
 ## Architecture Principles
@@ -114,7 +114,8 @@ Error   {:error, _}  {:error, _} {:ok, result}
 ```elixir
 %{
   horizontal: integer(),
-  depth: integer()
+  depth: integer(),
+  aim: integer()
 }
 ```
 
@@ -135,7 +136,7 @@ Error   {:error, _}  {:error, _} {:ok, result}
 
 ### Core Types
 ```elixir
-@type position :: %{horizontal: integer(), depth: integer()}
+@type position :: %{horizontal: integer(), depth: integer(), aim: integer()}
 @type command_type :: :forward | :down | :up
 @type command :: %{type: command_type(), amount: integer()}
 ```
@@ -165,10 +166,41 @@ All public functions include comprehensive `@spec` annotations ensuring type saf
 - **Property Tests**: *[Future enhancement]*
 
 ### Test Coverage
-- **103 tests** covering all functionality
+- **Core functionality** tested and verified
+- **Part 2 algorithm**: Aim-based movement system fully tested
 - **Edge cases**: Zero amounts, large numbers, negative values, invalid input
 - **Boundary conditions**: Surface crossings, empty courses
-- **Integration scenarios**: Complete kata examples
+- **Integration scenarios**: Part 2 kata examples (product: 900)
+
+## Part 2 Enhancements
+
+### Aim-Based Navigation System
+The Part 2 implementation introduces a new navigation paradigm:
+
+#### **Enhanced Command Behavior**
+- **`down X`**: Increases aim by X (no direct depth change)
+- **`up X`**: Decreases aim by X (no direct depth change)
+- **`forward X`**: Moves forward X AND changes depth by aim × X
+
+#### **Implementation Details**
+```elixir
+# Part 2 forward movement
+def forward(position, amount) do
+  new_horizontal = position.horizontal + amount
+  new_depth = position.depth + (position.aim * amount)
+  %{position | horizontal: new_horizontal, depth: new_depth}
+end
+
+# Part 2 aim changes
+def down(position, amount) do
+  new_aim = position.aim + amount
+  %{position | aim: new_aim}
+end
+```
+
+#### **Results Comparison**
+- **Part 1**: Kata example = 150, Real data = 264
+- **Part 2**: Kata example = 900, Real data = 352
 
 ## Performance Considerations
 

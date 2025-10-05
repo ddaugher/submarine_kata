@@ -7,7 +7,7 @@ defmodule SubmarineKata.SubmarineContext do
   modules thin.
   """
 
-  alias SubmarineKata.{Submarine, Command}
+  alias SubmarineKata.{Command, Submarine}
 
   @doc """
   Executes a course (list of commands) and returns the final position.
@@ -71,7 +71,8 @@ defmodule SubmarineKata.SubmarineContext do
       {:ok, 150}
 
   """
-  @spec execute_course_from_text_and_calculate_product(String.t()) :: {:ok, non_neg_integer()} | {:error, :invalid_command}
+  @spec execute_course_from_text_and_calculate_product(String.t()) ::
+    {:ok, non_neg_integer()} | {:error, :invalid_command}
   def execute_course_from_text_and_calculate_product(course_text) do
     with {:ok, final_position} <- execute_course_from_text(course_text) do
       product = Submarine.position_product(final_position)

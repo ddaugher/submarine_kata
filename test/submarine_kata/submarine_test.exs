@@ -7,7 +7,7 @@ defmodule SubmarineKata.SubmarineTest do
     test "creates a submarine at starting position" do
       submarine = Submarine.new()
 
-      assert submarine == %{horizontal: 0, depth: 0}
+      assert submarine == %{horizontal: 0, depth: 0, aim: 0}
     end
   end
 
@@ -15,19 +15,33 @@ defmodule SubmarineKata.SubmarineTest do
     test "creates a submarine with specific position" do
       submarine = Submarine.new(5, 10)
 
-      assert submarine == %{horizontal: 5, depth: 10}
+      assert submarine == %{horizontal: 5, depth: 10, aim: 0}
     end
 
     test "creates a submarine with zero position" do
       submarine = Submarine.new(0, 0)
 
-      assert submarine == %{horizontal: 0, depth: 0}
+      assert submarine == %{horizontal: 0, depth: 0, aim: 0}
     end
 
     test "creates a submarine with large values" do
       submarine = Submarine.new(1000, 2000)
 
-      assert submarine == %{horizontal: 1000, depth: 2000}
+      assert submarine == %{horizontal: 1000, depth: 2000, aim: 0}
+    end
+  end
+
+  describe "new/3" do
+    test "creates a submarine with specific position and aim" do
+      submarine = Submarine.new(5, 10, 3)
+
+      assert submarine == %{horizontal: 5, depth: 10, aim: 3}
+    end
+
+    test "creates a submarine with negative aim" do
+      submarine = Submarine.new(0, 0, -5)
+
+      assert submarine == %{horizontal: 0, depth: 0, aim: -5}
     end
   end
 
@@ -36,137 +50,144 @@ defmodule SubmarineKata.SubmarineTest do
       submarine = Submarine.new()
       new_submarine = Submarine.forward(submarine, 5)
 
-      assert new_submarine == %{horizontal: 5, depth: 0}
+      assert new_submarine == %{horizontal: 5, depth: 0, aim: 0}
+    end
+
+    test "moves submarine forward with aim (Part 2 behavior)" do
+      submarine = Submarine.new(0, 0, 5)
+      new_submarine = Submarine.forward(submarine, 8)
+
+      assert new_submarine == %{horizontal: 8, depth: 40, aim: 5}
     end
 
     test "moves submarine forward from existing position" do
       submarine = Submarine.new(10, 5)
       new_submarine = Submarine.forward(submarine, 3)
 
-      assert new_submarine == %{horizontal: 13, depth: 5}
+      assert new_submarine == %{horizontal: 13, depth: 5, aim: 0}
     end
 
     test "moves submarine forward by zero" do
       submarine = Submarine.new(5, 10)
       new_submarine = Submarine.forward(submarine, 0)
 
-      assert new_submarine == %{horizontal: 5, depth: 10}
+      assert new_submarine == %{horizontal: 5, depth: 10, aim: 0}
     end
 
     test "moves submarine forward by large amount" do
       submarine = Submarine.new()
       new_submarine = Submarine.forward(submarine, 1000)
 
-      assert new_submarine == %{horizontal: 1000, depth: 0}
+      assert new_submarine == %{horizontal: 1000, depth: 0, aim: 0}
     end
 
     test "moves submarine forward by negative amount (backward)" do
       submarine = Submarine.new(10, 5)
       new_submarine = Submarine.forward(submarine, -3)
 
-      assert new_submarine == %{horizontal: 7, depth: 5}
+      assert new_submarine == %{horizontal: 7, depth: 5, aim: 0}
     end
 
     test "moves submarine forward by negative amount can go below zero" do
       submarine = Submarine.new(5, 10)
       new_submarine = Submarine.forward(submarine, -10)
 
-      assert new_submarine == %{horizontal: -5, depth: 10}
+      assert new_submarine == %{horizontal: -5, depth: 10, aim: 0}
     end
   end
 
   describe "down/2" do
-    test "moves submarine down by specified amount" do
+    test "moves submarine down by specified amount (changes aim)" do
       submarine = Submarine.new()
       new_submarine = Submarine.down(submarine, 3)
 
-      assert new_submarine == %{horizontal: 0, depth: 3}
+      assert new_submarine == %{horizontal: 0, depth: 0, aim: 3}
     end
 
     test "moves submarine down from existing position" do
       submarine = Submarine.new(5, 10)
       new_submarine = Submarine.down(submarine, 2)
 
-      assert new_submarine == %{horizontal: 5, depth: 12}
+      assert new_submarine == %{horizontal: 5, depth: 10, aim: 2}
     end
 
     test "moves submarine down by zero" do
       submarine = Submarine.new(5, 10)
       new_submarine = Submarine.down(submarine, 0)
 
-      assert new_submarine == %{horizontal: 5, depth: 10}
+      assert new_submarine == %{horizontal: 5, depth: 10, aim: 0}
     end
 
     test "moves submarine down by large amount" do
       submarine = Submarine.new()
       new_submarine = Submarine.down(submarine, 500)
 
-      assert new_submarine == %{horizontal: 0, depth: 500}
+      assert new_submarine == %{horizontal: 0, depth: 0, aim: 500}
     end
 
     test "moves submarine down by negative amount (up)" do
-      submarine = Submarine.new(0, 10)
+      submarine = Submarine.new(0, 0, 10)
       new_submarine = Submarine.down(submarine, -3)
 
-      assert new_submarine == %{horizontal: 0, depth: 7}
+      assert new_submarine == %{horizontal: 0, depth: 0, aim: 7}
     end
 
     test "moves submarine down by negative amount can go below zero" do
-      submarine = Submarine.new(0, 5)
+      submarine = Submarine.new(0, 0, 5)
       new_submarine = Submarine.down(submarine, -10)
 
-      assert new_submarine == %{horizontal: 0, depth: -5}
+      assert new_submarine == %{horizontal: 0, depth: 0, aim: -5}
     end
   end
 
   describe "up/2" do
-    test "moves submarine up by specified amount" do
-      submarine = Submarine.new(0, 10)
+    test "moves submarine up by specified amount (changes aim)" do
+      submarine = Submarine.new(0, 0, 10)
       new_submarine = Submarine.up(submarine, 3)
 
-      assert new_submarine == %{horizontal: 0, depth: 7}
+      assert new_submarine == %{horizontal: 0, depth: 0, aim: 7}
     end
 
     test "moves submarine up from existing position" do
-      submarine = Submarine.new(5, 10)
+      submarine = Submarine.new(5, 0, 10)
       new_submarine = Submarine.up(submarine, 2)
 
-      assert new_submarine == %{horizontal: 5, depth: 8}
+      assert new_submarine == %{horizontal: 5, depth: 0, aim: 8}
     end
 
     test "moves submarine up by zero" do
-      submarine = Submarine.new(5, 10)
+      submarine = Submarine.new(5, 0, 10)
       new_submarine = Submarine.up(submarine, 0)
 
-      assert new_submarine == %{horizontal: 5, depth: 10}
+      assert new_submarine == %{horizontal: 5, depth: 0, aim: 10}
     end
 
     test "moves submarine up by large amount" do
-      submarine = Submarine.new(0, 1000)
+      submarine = Submarine.new(0, 0, 1000)
       new_submarine = Submarine.up(submarine, 500)
 
-      assert new_submarine == %{horizontal: 0, depth: 500}
+      assert new_submarine == %{horizontal: 0, depth: 0, aim: 500}
     end
 
-    test "moves submarine up beyond surface (depth can go negative)" do
-      submarine = Submarine.new(0, 5)
+    test "moves submarine up beyond surface (aim can go negative)" do
+      submarine = Submarine.new(0, 0, 5)
       new_submarine = Submarine.up(submarine, 10)
 
-      assert new_submarine == %{horizontal: 0, depth: -5}
+      assert new_submarine == %{horizontal: 0, depth: 0, aim: -5}
     end
 
     test "moves submarine up from surface" do
-      submarine = Submarine.new(0, 0)
+      submarine = Submarine.new(0, 0, 0)
       new_submarine = Submarine.up(submarine, 5)
 
-      assert new_submarine == %{horizontal: 0, depth: -5}
+      assert new_submarine == %{horizontal: 0, depth: 0, aim: -5}
     end
 
     test "moves submarine up by negative amount (down)" do
-      submarine = Submarine.new(0, 5)
+      submarine = Submarine.new(0, 0, 5)
       new_submarine = Submarine.up(submarine, -3)
 
-      assert new_submarine == %{horizontal: 0, depth: 8}
+      assert new_submarine == %{horizontal: 0, depth: 0, aim: 8}
     end
   end
 
@@ -227,31 +248,31 @@ defmodule SubmarineKata.SubmarineTest do
 
       # forward 5
       submarine = Submarine.forward(submarine, 5)
-      assert submarine == %{horizontal: 5, depth: 0}
+      assert submarine == %{horizontal: 5, depth: 0, aim: 0}
 
       # down 5
       submarine = Submarine.down(submarine, 5)
-      assert submarine == %{horizontal: 5, depth: 5}
+      assert submarine == %{horizontal: 5, depth: 0, aim: 5}
 
       # forward 8
       submarine = Submarine.forward(submarine, 8)
-      assert submarine == %{horizontal: 13, depth: 5}
+      assert submarine == %{horizontal: 13, depth: 40, aim: 5}
 
       # up 3
       submarine = Submarine.up(submarine, 3)
-      assert submarine == %{horizontal: 13, depth: 2}
+      assert submarine == %{horizontal: 13, depth: 40, aim: 2}
 
       # down 8
       submarine = Submarine.down(submarine, 8)
-      assert submarine == %{horizontal: 13, depth: 10}
+      assert submarine == %{horizontal: 13, depth: 40, aim: 10}
 
       # forward 2
       submarine = Submarine.forward(submarine, 2)
-      assert submarine == %{horizontal: 15, depth: 10}
+      assert submarine == %{horizontal: 15, depth: 60, aim: 10}
 
       # Final product
       product = Submarine.position_product(submarine)
-      assert product == 150
+      assert product == 900
     end
 
     test "complex movement sequence" do
@@ -268,7 +289,6 @@ defmodule SubmarineKata.SubmarineTest do
         {:forward, 6}
       ]
 
-
       final_submarine = Enum.reduce(movements, submarine, fn {action, amount}, sub ->
         case action do
           :forward -> Submarine.forward(sub, amount)
@@ -277,8 +297,8 @@ defmodule SubmarineKata.SubmarineTest do
         end
       end)
 
-      assert final_submarine == %{horizontal: 20, depth: 6}
-      assert Submarine.position_product(final_submarine) == 120
+      assert final_submarine == %{horizontal: 20, depth: 61, aim: 6}
+      assert Submarine.position_product(final_submarine) == 1220
     end
   end
 end

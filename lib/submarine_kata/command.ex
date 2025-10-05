@@ -115,7 +115,8 @@ defmodule SubmarineKata.Command do
   defp parse_multiple_commands(command_strings) do
     commands = Enum.map(command_strings, &parse/1)
 
-    if Enum.all?(commands, fn {:ok, _} -> true; _ -> false end) do
+    if Enum.all?(commands, fn {:ok, _} -> true
+                               _ -> false end) do
       parsed_commands = Enum.map(commands, fn {:ok, command} -> command end)
       {:ok, parsed_commands}
     else

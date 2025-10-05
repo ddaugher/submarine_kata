@@ -67,11 +67,11 @@ defmodule SubmarineKata.SubmarineTest do
       assert new_submarine == %{horizontal: 7, depth: 5}
     end
 
-    test "moves submarine forward by negative amount cannot go below zero" do
+    test "moves submarine forward by negative amount can go below zero" do
       submarine = Submarine.new(5, 10)
       new_submarine = Submarine.forward(submarine, -10)
 
-      assert new_submarine == %{horizontal: 0, depth: 10}
+      assert new_submarine == %{horizontal: -5, depth: 10}
     end
   end
 
@@ -111,11 +111,11 @@ defmodule SubmarineKata.SubmarineTest do
       assert new_submarine == %{horizontal: 0, depth: 7}
     end
 
-    test "moves submarine down by negative amount cannot go below zero" do
+    test "moves submarine down by negative amount can go below zero" do
       submarine = Submarine.new(0, 5)
       new_submarine = Submarine.down(submarine, -10)
 
-      assert new_submarine == %{horizontal: 0, depth: 0}
+      assert new_submarine == %{horizontal: 0, depth: -5}
     end
   end
 
@@ -148,18 +148,18 @@ defmodule SubmarineKata.SubmarineTest do
       assert new_submarine == %{horizontal: 0, depth: 500}
     end
 
-    test "moves submarine up beyond surface (depth cannot go negative)" do
+    test "moves submarine up beyond surface (depth can go negative)" do
       submarine = Submarine.new(0, 5)
       new_submarine = Submarine.up(submarine, 10)
 
-      assert new_submarine == %{horizontal: 0, depth: 0}
+      assert new_submarine == %{horizontal: 0, depth: -5}
     end
 
     test "moves submarine up from surface" do
       submarine = Submarine.new(0, 0)
       new_submarine = Submarine.up(submarine, 5)
 
-      assert new_submarine == %{horizontal: 0, depth: 0}
+      assert new_submarine == %{horizontal: 0, depth: -5}
     end
 
     test "moves submarine up by negative amount (down)" do
@@ -183,6 +183,20 @@ defmodule SubmarineKata.SubmarineTest do
       product = Submarine.position_product(submarine)
 
       assert product == 0
+    end
+
+    test "calculates product with negative values" do
+      submarine = Submarine.new(-5, -3)
+      product = Submarine.position_product(submarine)
+
+      assert product == 15
+    end
+
+    test "calculates product with mixed positive and negative values" do
+      submarine = Submarine.new(-4, 5)
+      product = Submarine.position_product(submarine)
+
+      assert product == -20
     end
 
     test "calculates product when both values are zero" do

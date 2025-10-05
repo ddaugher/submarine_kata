@@ -6,7 +6,7 @@ defmodule SubmarineKata.Submarine do
   movement commands: forward, down, and up.
   """
 
-  @type position :: %{horizontal: non_neg_integer(), depth: non_neg_integer()}
+  @type position :: %{horizontal: integer(), depth: integer()}
 
   @doc """
   Creates a new submarine at the starting position (0, 0).
@@ -31,8 +31,8 @@ defmodule SubmarineKata.Submarine do
       %{horizontal: 5, depth: 10}
 
   """
-  @spec new(non_neg_integer(), non_neg_integer()) :: position()
-  def new(horizontal, depth) when horizontal >= 0 and depth >= 0 do
+  @spec new(integer(), integer()) :: position()
+  def new(horizontal, depth) do
     %{horizontal: horizontal, depth: depth}
   end
 
@@ -48,7 +48,7 @@ defmodule SubmarineKata.Submarine do
   """
   @spec forward(position(), integer()) :: position()
   def forward(position, amount) do
-    new_horizontal = max(0, position.horizontal + amount)
+    new_horizontal = position.horizontal + amount
     %{position | horizontal: new_horizontal}
   end
 
@@ -64,7 +64,7 @@ defmodule SubmarineKata.Submarine do
   """
   @spec down(position(), integer()) :: position()
   def down(position, amount) do
-    new_depth = max(0, position.depth + amount)
+    new_depth = position.depth + amount
     %{position | depth: new_depth}
   end
 
@@ -80,7 +80,7 @@ defmodule SubmarineKata.Submarine do
   """
   @spec up(position(), integer()) :: position()
   def up(position, amount) do
-    new_depth = max(0, position.depth - amount)
+    new_depth = position.depth - amount
     %{position | depth: new_depth}
   end
 
@@ -94,7 +94,7 @@ defmodule SubmarineKata.Submarine do
       150
 
   """
-  @spec position_product(position()) :: non_neg_integer()
+  @spec position_product(position()) :: integer()
   def position_product(position) do
     position.horizontal * position.depth
   end

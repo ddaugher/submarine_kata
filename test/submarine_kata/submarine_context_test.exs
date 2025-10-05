@@ -17,7 +17,7 @@ defmodule SubmarineKata.SubmarineContextTest do
     test "executes single command course" do
       assert SubmarineContext.execute_course(["forward 5"]) == {:ok, %{horizontal: 5, depth: 0}}
       assert SubmarineContext.execute_course(["down 3"]) == {:ok, %{horizontal: 0, depth: 3}}
-      assert SubmarineContext.execute_course(["up 2"]) == {:ok, %{horizontal: 0, depth: 0}}
+      assert SubmarineContext.execute_course(["up 2"]) == {:ok, %{horizontal: 0, depth: -2}}
     end
 
     test "executes complex course" do
@@ -42,12 +42,12 @@ defmodule SubmarineKata.SubmarineContextTest do
 
     test "handles negative amounts" do
       commands = ["forward 5", "down -3", "up 2"]
-      assert SubmarineContext.execute_course(commands) == {:ok, %{horizontal: 5, depth: 0}}
+      assert SubmarineContext.execute_course(commands) == {:ok, %{horizontal: 5, depth: -5}}
     end
 
     test "handles course that goes above surface" do
       commands = ["down 5", "up 10", "forward 3"]
-      assert SubmarineContext.execute_course(commands) == {:ok, %{horizontal: 3, depth: 0}}
+      assert SubmarineContext.execute_course(commands) == {:ok, %{horizontal: 3, depth: -5}}
     end
   end
 
@@ -193,7 +193,7 @@ defmodule SubmarineKata.SubmarineContextTest do
       expected_history = [
         %{horizontal: 0, depth: 0},
         %{horizontal: 0, depth: 5},
-        %{horizontal: 0, depth: 0}
+        %{horizontal: 0, depth: -5}
       ]
 
       assert SubmarineContext.execute_course_with_history(commands) == {:ok, expected_history}

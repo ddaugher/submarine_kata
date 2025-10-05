@@ -202,36 +202,25 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
   def render(assigns) do
     ~H"""
     <div class="space-y-8">
-      <!-- Header -->
-      <div class="hero bg-base-100 rounded-lg shadow-lg">
-        <div class="hero-content text-center">
-          <div class="max-w-md">
-            <h1 class="text-5xl font-bold">🚢 Submarine Kata</h1>
-            <p class="py-6">
-              Visualizing the submarine navigation algorithm with real-time map reconstruction
-            </p>
+      <!-- Controls -->
+      <div class="flex gap-4 justify-center">
+        <button
+          phx-click="start_visualization"
+          disabled={@is_running}
+          class={[
+            "btn btn-primary btn-lg",
+            if(@is_running, do: "btn-disabled", else: "")
+          ]}
+        >
+          {if @is_running, do: "Running...", else: "🚀 Start Visualization"}
+        </button>
 
-            <div class="flex gap-4 justify-center">
-              <button
-                phx-click="start_visualization"
-                disabled={@is_running}
-                class={[
-                  "btn btn-primary",
-                  if(@is_running, do: "btn-disabled", else: "")
-                ]}
-              >
-                {if @is_running, do: "Running...", else: "🚀 Start Visualization"}
-              </button>
-
-              <button
-                phx-click="reset"
-                class="btn btn-outline"
-              >
-                🔄 Reset
-              </button>
-            </div>
-          </div>
-        </div>
+        <button
+          phx-click="reset"
+          class="btn btn-outline btn-lg"
+        >
+          🔄 Reset
+        </button>
       </div>
 
       <!-- Progress Steps -->

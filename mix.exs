@@ -22,9 +22,17 @@ defmodule SubmarineKata.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:phoenix, "~> 1.8.0"},
+      {:phoenix_html, "~> 4.1"},
+      {:phoenix_live_view, "~> 1.1"},
+      {:phoenix_live_dashboard, "~> 0.8"},
+      {:gettext, "~> 0.25"},
+      {:plug_cowboy, "~> 2.7"},
+      {:jason, "~> 1.4"},
+      {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
+      {:dns_cluster, "~> 0.1.1"},
+      {:finch, "~> 0.13"}
     ]
   end
 end

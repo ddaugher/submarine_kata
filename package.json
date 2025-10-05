@@ -1,0 +1,12 @@
+{
+  "repository": {},
+  "license": "MIT",
+  "scripts": {
+    "deploy": "tailwindcss --minify -i assets/css/app.css -o ../priv/static/assets/app.css",
+    "watch": "tailwindcss --watch -i assets/css/app.css -o ../priv/static/assets/app.css"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.3.0",
+    "daisyui": "4.12.14"
+  }
+}

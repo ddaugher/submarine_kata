@@ -113,8 +113,8 @@ Error   {:error, _}  {:error, _} {:ok, result}
 ### Position Structure
 ```elixir
 %{
-  horizontal: non_neg_integer(),
-  depth: non_neg_integer()
+  horizontal: integer(),
+  depth: integer()
 }
 ```
 
@@ -122,7 +122,7 @@ Error   {:error, _}  {:error, _} {:ok, result}
 ```elixir
 %{
   type: :forward | :down | :up,
-  amount: non_neg_integer()
+  amount: integer()
 }
 ```
 
@@ -135,9 +135,9 @@ Error   {:error, _}  {:error, _} {:ok, result}
 
 ### Core Types
 ```elixir
-@type position :: %{horizontal: non_neg_integer(), depth: non_neg_integer()}
+@type position :: %{horizontal: integer(), depth: integer()}
 @type command_type :: :forward | :down | :up
-@type command :: %{type: command_type(), amount: non_neg_integer()}
+@type command :: %{type: command_type(), amount: integer()}
 ```
 
 ### Function Signatures
@@ -161,12 +161,13 @@ All public functions include comprehensive `@spec` annotations ensuring type saf
 - **Unit Tests**: Individual module testing
 - **Integration Tests**: Cross-module functionality
 - **Doctests**: Inline documentation examples
+- **Negative Value Tests**: Comprehensive testing of negative positions
 - **Property Tests**: *[Future enhancement]*
 
 ### Test Coverage
-- **96 tests** covering all functionality
-- **Edge cases**: Zero amounts, large numbers, invalid input
-- **Boundary conditions**: Surface limits, empty courses
+- **103 tests** covering all functionality
+- **Edge cases**: Zero amounts, large numbers, negative values, invalid input
+- **Boundary conditions**: Surface crossings, empty courses
 - **Integration scenarios**: Complete kata examples
 
 ## Performance Considerations
@@ -186,8 +187,8 @@ All public functions include comprehensive `@spec` annotations ensuring type saf
 
 ### Input Validation
 - **Command Parsing**: Strict validation of input format
-- **Numeric Validation**: Non-negative integer constraints
-- **Boundary Checks**: Depth cannot go below surface
+- **Numeric Validation**: Integer constraints (positive and negative allowed)
+- **Boundary Checks**: No artificial limits on position values
 
 ### Data Integrity
 - **Immutable State**: No accidental modifications

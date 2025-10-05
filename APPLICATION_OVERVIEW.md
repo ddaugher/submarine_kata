@@ -22,14 +22,14 @@ The application processes a series of navigation commands and calculates the fin
 
 ### 1. Submarine Position
 A submarine has two position coordinates:
-- **Horizontal Position**: Distance traveled forward (non-negative integer)
-- **Depth**: Distance below surface (non-negative integer, where 0 = surface)
+- **Horizontal Position**: Distance from starting point (integer, can be negative for backward movement)
+- **Depth**: Distance from surface (integer, negative = above water, 0 = surface, positive = below water)
 
 ### 2. Navigation Commands
 Three types of movement commands:
-- **`forward X`**: Move forward X units (increases horizontal position)
-- **`down X`**: Dive down X units (increases depth)
-- **`up X`**: Surface up X units (decreases depth, cannot go below 0)
+- **`forward X`**: Move forward X units (increases horizontal position, negative X = backward)
+- **`down X`**: Dive down X units (increases depth, negative X = surface up)
+- **`up X`**: Surface up X units (decreases depth, can go above water surface)
 
 ### 3. Course Execution
 A course is a sequence of commands that the submarine follows to reach a final position.
@@ -145,19 +145,36 @@ IO.puts("Product: #{product}")
 ### Example 4: Surface Exploration
 
 ```elixir
-# Course that goes to surface and back down
+# Course that goes to surface and above water
 surface_course = [
   "down 10",      # Dive to depth 10
   "forward 50",   # Explore at depth
   "up 10",        # Surface (depth 0)
   "forward 100",  # Continue on surface
-  "down 5",       # Shallow dive to depth 5
-  "forward 25"    # Final movement
+  "up 5",         # Go above water (depth -5)
+  "forward 25"    # Final movement above water
 ]
 
 {:ok, position} = SubmarineKata.execute_course(surface_course)
 IO.puts("Surface exploration: #{inspect(position)}")
-# Output: Surface exploration: %{horizontal: 175, depth: 5}
+# Output: Surface exploration: %{horizontal: 175, depth: -5}
+```
+
+### Example 5: Negative Values
+
+```elixir
+# Course demonstrating negative values
+negative_course = [
+  "forward 10",   # Move forward to position 10
+  "down 5",       # Dive to depth 5
+  "forward -3",   # Move backward to position 7
+  "up 8",         # Surface and go above water (depth -3)
+  "down -2"       # Surface up more (depth -5)
+]
+
+{:ok, position} = SubmarineKata.execute_course(negative_course)
+IO.puts("Negative values: #{inspect(position)}")
+# Output: Negative values: %{horizontal: 7, depth: -5}
 ```
 
 ## Error Scenarios

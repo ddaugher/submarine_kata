@@ -36,12 +36,12 @@ commands = ["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"]
 ## 🎯 Current Status: Part 1 Complete
 
 ### ✅ Implemented Features
-- **Basic Navigation**: Forward, down, and up commands
-- **Course Execution**: Process sequences of commands
-- **Position Calculation**: Track horizontal position and depth
-- **Product Calculation**: Calculate final position product
+- **Basic Navigation**: Forward, down, and up commands with full 3D movement
+- **Course Execution**: Process sequences of commands including negative values
+- **Position Calculation**: Track horizontal position and depth (can go negative)
+- **Product Calculation**: Calculate final position product (handles negative values)
 - **Error Handling**: Comprehensive input validation
-- **Comprehensive Testing**: 96 tests with 100% pass rate
+- **Comprehensive Testing**: 103 tests with 100% pass rate
 
 ### 🏗️ Architecture
 - **Modular Design**: Clean separation of concerns
@@ -50,11 +50,11 @@ commands = ["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"]
 - **Error Handling**: Tagged tuples for explicit error management
 
 ### 📊 Test Coverage
-- **96 tests** covering all functionality
+- **103 tests** covering all functionality
 - **3 doctests** for inline documentation
-- **Edge cases**: Zero amounts, large numbers, invalid input
+- **Edge cases**: Zero amounts, large numbers, negative values, invalid input
 - **Integration tests**: Complete kata examples
-- **Real-world scenarios**: Complex navigation patterns
+- **Real-world scenarios**: Complex navigation patterns including surface crossings
 
 ## 🔮 Future Roadmap
 
@@ -142,6 +142,10 @@ forward 2
 **Expected Result:**
 - Final position: `horizontal: 15, depth: 10`
 - Product: `150` ✅
+
+**Real Input Data Result:**
+- Final position: `horizontal: 22, depth: 12`
+- Product: `264` ✅
 
 ## 🔧 Technical Details
 

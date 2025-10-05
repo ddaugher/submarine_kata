@@ -8,9 +8,9 @@ This document outlines the version management strategy for the Submarine Kata pr
 
 ### Part 1 - Basic Navigation ✅ COMPLETE
 - **Status**: Implemented and tested
-- **Features**: Forward/down/up commands, basic navigation
+- **Features**: Forward/down/up commands, full 3D navigation with negative values
 - **API**: Stable and documented
-- **Tests**: 96 tests, 100% pass rate
+- **Tests**: 103 tests, 100% pass rate
 
 ### Part 2 - Enhanced Navigation 🔄 PLANNED
 - **Status**: Design phase
@@ -80,7 +80,7 @@ This document outlines the version management strategy for the Submarine Kata pr
 
 ### Module Evolution
 ```elixir
-# Part 1 - Basic structure
+# Part 1 - Basic structure (supports negative values)
 %{horizontal: integer(), depth: integer()}
 
 # Part 2 - Enhanced with aim (backward compatible)
@@ -129,7 +129,7 @@ SubmarineKata.execute_course(commands)
 SubmarineKata.execute_course_and_calculate_product(commands)
 SubmarineKata.execute_course_from_text_and_calculate_product(text)
 
-# Data structures
+# Data structures (supports negative values)
 %{horizontal: integer(), depth: integer()}
 %{type: :forward | :down | :up, amount: integer()}
 ```

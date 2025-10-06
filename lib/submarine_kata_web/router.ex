@@ -19,6 +19,7 @@ defmodule SubmarineKataWeb.Router do
     pipe_through :browser
 
     live "/", SubmarineKataLive
+    live "/part2", Part2Live
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

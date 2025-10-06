@@ -25,13 +25,13 @@ defmodule SubmarineKataWeb.LayoutView do
             document.addEventListener('DOMContentLoaded', function() {
               // Wait a bit for Phoenix libraries to load, then initialize
               setTimeout(function() {
-                console.log("🚀 Initializing LiveView...");
+                console.log("Initializing LiveView...");
 
                 // Get CSRF token
                 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
                 if (typeof Phoenix === 'undefined' || typeof Phoenix.Socket === 'undefined' || typeof LiveView === 'undefined' || typeof LiveView.LiveSocket === 'undefined') {
-                  console.error("❌ Phoenix libraries not loaded!");
+                  console.error("Phoenix libraries not loaded!");
                   return;
                 }
 
@@ -49,7 +49,7 @@ defmodule SubmarineKataWeb.LayoutView do
 
                 // Expose liveSocket on window for web console debug logs and latency simulation:
                 window.liveSocket = liveSocket
-                console.log("✅ LiveView setup complete!");
+                console.log("LiveView setup complete!");
 
               }, 100); // Wait 100ms for Phoenix libraries to load
             });
@@ -60,7 +60,7 @@ defmodule SubmarineKataWeb.LayoutView do
         <div class="min-h-screen bg-base-200">
           <nav class="navbar bg-primary text-primary-content">
             <div class="navbar-start">
-              <a class="btn btn-ghost normal-case text-xl">🚢 Submarine Kata</a>
+              <a href="/" class="btn btn-ghost normal-case text-xl">Submarine Kata</a>
             </div>
             <div class="navbar-end">
               <div class="dropdown dropdown-end">
@@ -68,9 +68,8 @@ defmodule SubmarineKataWeb.LayoutView do
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
                 </label>
                 <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                  <li><a>Part 1: Basic Navigation</a></li>
-                  <li><a>Part 2: Aim-based Navigation</a></li>
-                  <li><a>Part 3: Map Reconstruction</a></li>
+                  <li><a href="/part2" class="text-gray-900 hover:text-blue-600 hover:bg-blue-50">Part 2: Aim-based Navigation</a></li>
+                  <li><a href="/" class="text-gray-900 hover:text-blue-600 hover:bg-blue-50">Part 3: Map Reconstruction</a></li>
                 </ul>
               </div>
             </div>
@@ -82,7 +81,7 @@ defmodule SubmarineKataWeb.LayoutView do
 
           <footer class="footer footer-center p-4 bg-base-300 text-base-content">
             <aside>
-              <p>🚢 Submarine Kata - Phoenix LiveView Visualization</p>
+              <p>Submarine Kata - Phoenix LiveView Visualization</p>
             </aside>
           </footer>
         </div>

@@ -52,11 +52,11 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
 
   @impl true
   def handle_event("start_visualization", _params, socket) do
-    IO.puts("🚀 Start Visualization button clicked!")
+    IO.puts("Start Visualization button clicked!")
 
     # Prevent multiple simultaneous runs
     if socket.assigns.is_running do
-      IO.puts("⚠️ Visualization already running, ignoring click")
+      IO.puts("Visualization already running, ignoring click")
       {:noreply, socket}
     else
       # Initialize the algorithm execution
@@ -76,14 +76,14 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
 
       # Start the visualization process
       send(self(), :next_step)
-      IO.puts("📤 Sent :next_step message")
+      IO.puts("Sent :next_step message")
       {:noreply, socket}
     end
   end
 
   @impl true
   def handle_event("reset", _params, socket) do
-    IO.puts("🔄 Reset button clicked!")
+    IO.puts("Reset button clicked!")
 
     socket =
       socket
@@ -105,16 +105,16 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
 
   @impl true
   def handle_info(:next_step, socket) do
-    IO.puts("📥 Received :next_step message, current step_index: #{socket.assigns.step_index}, is_running: #{socket.assigns.is_running}")
+    IO.puts("Received :next_step message, current step_index: #{socket.assigns.step_index}, is_running: #{socket.assigns.is_running}")
 
     # Only process if we're still running
     if not socket.assigns.is_running do
-      IO.puts("⚠️ Process stopped, ignoring :next_step message")
+      IO.puts("Process stopped, ignoring :next_step message")
       {:noreply, socket}
     else
       case socket.assigns.step_index do
         0 ->
-          IO.puts("🔄 Step 0: Loading data (substep #{socket.assigns.loading_substep})")
+          IO.puts("Step 0: Loading data (substep #{socket.assigns.loading_substep})")
           # Progressive loading of scanner data
           case socket.assigns.loading_substep do
             0 ->
@@ -158,7 +158,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
           end
 
         1 ->
-          IO.puts("🔄 Step 1: Scanning initial position")
+          IO.puts("Step 1: Scanning initial position")
           # Scan at initial position (0, 0)
           {position, map} = scan_at_position(socket.assigns.current_position, socket.assigns.current_map, socket.assigns.scanner_data)
 
@@ -173,7 +173,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
           {:noreply, socket}
 
         2 ->
-          IO.puts("🔄 Step 2: Executing navigation command #{socket.assigns.command_index + 1}")
+          IO.puts("Step 2: Executing navigation command #{socket.assigns.command_index + 1}")
           # Execute next navigation command
           case execute_next_command(socket) do
             {:ok, new_socket} ->
@@ -187,7 +187,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
           end
 
         3 ->
-          IO.puts("🔄 Step 3: Complete")
+          IO.puts("Step 3: Complete")
           # Algorithm complete
           socket =
             socket
@@ -269,14 +269,14 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
             if(@is_running, do: "btn-disabled", else: "")
           ]}
         >
-          {if @is_running, do: "Running...", else: "🚀 Start Visualization"}
+          {if @is_running, do: "Running...", else: "Start Visualization"}
         </button>
 
         <button
           phx-click="reset"
           class="btn btn-outline btn-lg"
         >
-          🔄 Reset
+          Reset
         </button>
       </div>
 
@@ -331,7 +331,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
 
                   <!-- Scanner Data Information Section -->
                   <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Scanner Data Information</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Scanner Data Information</h3>
 
                     <!-- Loading Progress Animation -->
                     <div class="w-full bg-white p-4 rounded-lg border border-gray-200 mb-4">
@@ -411,7 +411,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                     <!-- Scanner Data Summary -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div class="bg-blue-50 p-3 rounded">
-                        <h4 class="font-bold text-sm mb-2">📊 Scanner Data Summary</h4>
+                        <h4 class="font-bold text-sm mb-2">Scanner Data Summary</h4>
                         <ul class="text-xs space-y-1">
                           <li>• Total coordinates: <%= map_size(@scanner_data) %></li>
                           <li>• Data format: 3x3 grid per coordinate</li>
@@ -421,7 +421,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                       </div>
 
                       <div class="bg-green-50 p-3 rounded">
-                        <h4 class="font-bold text-sm mb-2">🧭 Navigation Summary</h4>
+                        <h4 class="font-bold text-sm mb-2">Navigation Summary</h4>
                         <ul class="text-xs space-y-1">
                           <li>• Total commands: <%= length(@navigation_commands) %></li>
                           <li>• Command types: forward, down, up</li>
@@ -433,7 +433,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
 
                     <!-- Scanner Data Sample -->
                     <div class="bg-gray-100 p-3 rounded max-h-48 overflow-y-auto">
-                      <h4 class="font-bold text-sm mb-2">🔍 Scanner Data Sample:</h4>
+                      <h4 class="font-bold text-sm mb-2">Scanner Data Sample:</h4>
                       <pre class="text-xs"><%=
                         if @current_step == :loading_data and @loading_progress < 100 do
                           # Show progressively loaded coordinates
@@ -465,12 +465,12 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                 <% :navigating -> %>
                   <div class="alert bg-gray-50 border-gray-200 text-gray-700">
                     <span class="loading loading-spinner loading-sm text-gray-600"></span>
-                    <span>🚢 Submarine is navigating through the ocean...</span>
+                    <span>Submarine is navigating through the ocean...</span>
                   </div>
 
                   <!-- Scanner Data Information Section -->
                   <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Scanner Data Information</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Scanner Data Information</h3>
 
                     <!-- Loading Progress Animation -->
                     <div class="w-full bg-white p-4 rounded-lg border border-gray-200 mb-4">
@@ -509,7 +509,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                     <!-- Scanner Data Summary -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div class="bg-blue-50 p-3 rounded">
-                        <h4 class="font-bold text-sm mb-2">📊 Scanner Data Summary</h4>
+                        <h4 class="font-bold text-sm mb-2">Scanner Data Summary</h4>
                         <ul class="text-xs space-y-1">
                           <li>• Total coordinates: <%= map_size(@scanner_data) %></li>
                           <li>• Data format: 3x3 grid per coordinate</li>
@@ -519,7 +519,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                       </div>
 
                       <div class="bg-green-50 p-3 rounded">
-                        <h4 class="font-bold text-sm mb-2">🧭 Navigation Summary</h4>
+                        <h4 class="font-bold text-sm mb-2">Navigation Summary</h4>
                         <ul class="text-xs space-y-1">
                           <li>• Total commands: <%= length(@navigation_commands) %></li>
                           <li>• Command types: forward, down, up</li>
@@ -531,7 +531,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
 
                     <!-- Scanner Data Sample -->
                     <div class="bg-gray-100 p-3 rounded max-h-48 overflow-y-auto">
-                      <h4 class="font-bold text-sm mb-2">🔍 Scanner Data Sample:</h4>
+                      <h4 class="font-bold text-sm mb-2">Scanner Data Sample:</h4>
                       <pre class="text-xs"><%=
                         @scanner_data
                         |> Enum.take(5)
@@ -678,7 +678,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                     <span>Navigation complete! Rendering final map...</span>
                   </div>
                   <div class="text-sm text-gray-600">
-                    <p>🗺️ Final Map Reconstruction:</p>
+                    <p>Final Map Reconstruction:</p>
                     <div class="bg-black text-green-400 p-4 rounded font-mono text-xs max-h-96 overflow-y-auto" style="white-space: pre;">
                       <%= if map_size(@current_map) > 0 do %>
                         <%= SubmarineKata.Scanner.render_map(@current_map) %>
@@ -691,12 +691,12 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                 <% :complete -> %>
                   <div class="alert bg-emerald-50 border-emerald-200 text-emerald-800">
                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span>🎉 Mission Complete! Map reconstruction finished with <%= map_size(@current_map) %> cells discovered.</span>
+                    <span>Mission Complete! Map reconstruction finished with <%= map_size(@current_map) %> cells discovered.</span>
                   </div>
 
                   <!-- Scanner Data Information Section -->
                   <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Scanner Data Information</h3>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Scanner Data Information</h3>
 
                     <!-- Loading Progress Animation -->
                     <div class="w-full bg-white p-4 rounded-lg border border-gray-200 mb-4">
@@ -735,7 +735,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                     <!-- Scanner Data Summary -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div class="bg-blue-50 p-3 rounded">
-                        <h4 class="font-bold text-sm mb-2">📊 Scanner Data Summary</h4>
+                        <h4 class="font-bold text-sm mb-2">Scanner Data Summary</h4>
                         <ul class="text-xs space-y-1">
                           <li>• Total coordinates: <%= map_size(@scanner_data) %></li>
                           <li>• Data format: 3x3 grid per coordinate</li>
@@ -745,7 +745,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                       </div>
 
                       <div class="bg-green-50 p-3 rounded">
-                        <h4 class="font-bold text-sm mb-2">🧭 Navigation Summary</h4>
+                        <h4 class="font-bold text-sm mb-2">Navigation Summary</h4>
                         <ul class="text-xs space-y-1">
                           <li>• Total commands: <%= length(@navigation_commands) %></li>
                           <li>• Command types: forward, down, up</li>
@@ -757,7 +757,7 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
 
                     <!-- Scanner Data Sample -->
                     <div class="bg-gray-100 p-3 rounded max-h-48 overflow-y-auto">
-                      <h4 class="font-bold text-sm mb-2">🔍 Scanner Data Sample:</h4>
+                      <h4 class="font-bold text-sm mb-2">Scanner Data Sample:</h4>
                       <pre class="text-xs"><%=
                         @scanner_data
                         |> Enum.take(5)

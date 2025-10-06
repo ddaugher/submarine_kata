@@ -310,56 +310,63 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
 
           <!-- Content Area -->
           <div class="max-w-6xl mx-auto">
-            <!-- Persistent Scanner Data Information -->
-            <%= if @step_index >= 0 do %>
-              <div class="card bg-base-100 shadow-xl mb-6">
-                <div class="card-body">
-                  <h2 class="card-title">📊 Scanner Data Information</h2>
+            <!-- Process Information -->
+            <div class="card bg-base-100 shadow-xl">
+              <div class="card-body">
+                <h2 class="card-title">Process Information</h2>
 
-                  <!-- Loading Status -->
-                  <%= if @current_step == :loading_data do %>
-                    <div class="alert bg-gray-50 border-gray-200 text-gray-700 mb-4">
-                      <span class="loading loading-spinner loading-sm text-gray-600"></span>
-                      <span>Loading scanner data from input files...</span>
-                    </div>
-                  <% end %>
-
-                  <!-- Loading Progress Animation - Always Visible -->
-                  <div class="w-full bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-                    <div class="flex justify-between text-sm mb-2">
-                      <span class="text-gray-700">Data Loading Progress</span>
-                      <span class="text-gray-600">
-                        <%= if @loading_progress < 100 do %>
-                          Loading coordinates... <%= @loading_progress %>%
-                        <% else %>
-                          <%= length(@loaded_coordinates) %> coordinates loaded
-                        <% end %>
-                      </span>
-                    </div>
-                    <progress class="progress w-full" value={@loading_progress} max="100"></progress>
-                    <div class="flex justify-between text-xs text-gray-500 mt-1">
-                      <span><%= length(@loaded_coordinates) %> of <%= map_size(@scanner_data) %> coordinates loaded</span>
-                      <span>
-                        <%= cond do %>
-                          <% @loading_progress < 100 and @current_step == :loading_data -> %>
-                            Parsing scanner data...
-                          <% @current_step == :loading_data -> %>
-                            Ready to navigate
-                          <% @current_step == :navigating -> %>
-                            Navigation in progress
-                          <% @current_step == :reconstructing -> %>
-                            Map reconstruction in progress
-                          <% true -> %>
-                            Mission complete
-                        <% end %>
-                      </span>
-                    </div>
+                <div class="space-y-4">
+              <%= case @current_step do %>
+                <% :intro -> %>
+                  <div class="alert bg-slate-50 border-slate-200 text-slate-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6 text-slate-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>Ready to start the submarine navigation visualization!</span>
                   </div>
 
-                  <!-- Detailed Scanner Information -->
-                  <div class="space-y-4">
+                <% :loading_data -> %>
+                  <div class="alert bg-gray-50 border-gray-200 text-gray-700">
+                    <span class="loading loading-spinner loading-sm text-gray-600"></span>
+                    <span>Loading scanner data from input files...</span>
+                  </div>
 
-                    <div class="stats stats-horizontal shadow-sm bg-white border border-gray-200">
+                  <!-- Scanner Data Information Section -->
+                  <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Scanner Data Information</h3>
+
+                    <!-- Loading Progress Animation -->
+                    <div class="w-full bg-white p-4 rounded-lg border border-gray-200 mb-4">
+                      <div class="flex justify-between text-sm mb-2">
+                        <span class="text-gray-700">Data Loading Progress</span>
+                        <span class="text-gray-600">
+                          <%= if @loading_progress < 100 do %>
+                            Loading coordinates... <%= @loading_progress %>%
+                          <% else %>
+                            <%= length(@loaded_coordinates) %> coordinates loaded
+                          <% end %>
+                        </span>
+                      </div>
+                      <progress class="progress w-full" value={@loading_progress} max="100"></progress>
+                      <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span><%= length(@loaded_coordinates) %> of <%= map_size(@scanner_data) %> coordinates loaded</span>
+                        <span>
+                          <%= cond do %>
+                            <% @loading_progress < 100 and @current_step == :loading_data -> %>
+                              Parsing scanner data...
+                            <% @current_step == :loading_data -> %>
+                              Ready to navigate
+                            <% @current_step == :navigating -> %>
+                              Navigation in progress
+                            <% @current_step == :reconstructing -> %>
+                              Map reconstruction in progress
+                            <% true -> %>
+                              Mission complete
+                          <% end %>
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Scanner Statistics -->
+                    <div class="stats stats-horizontal shadow-sm bg-white border border-gray-200 mb-4">
                       <div class="stat bg-gray-50 rounded-lg">
                         <div class="stat-title text-gray-600">Scanner Coordinates</div>
                         <div class={["stat-value text-gray-800", if(@current_step == :loading_data and @loading_progress < 100, do: "animate-pulse")]}>
@@ -401,88 +408,140 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                       </div>
                     </div>
 
-                    <div class="text-sm text-gray-600">
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-blue-50 p-3 rounded">
-                          <h4 class="font-bold text-sm mb-2">📊 Scanner Data Summary</h4>
-                          <ul class="text-xs space-y-1">
-                            <li>• Total coordinates: <%= map_size(@scanner_data) %></li>
-                            <li>• Data format: 3x3 grid per coordinate</li>
-                            <li>• Coverage area: Dynamic based on navigation</li>
-                            <li>• Scan resolution: High precision</li>
-                          </ul>
-                        </div>
+                    <!-- Scanner Data Summary -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div class="bg-blue-50 p-3 rounded">
+                        <h4 class="font-bold text-sm mb-2">📊 Scanner Data Summary</h4>
+                        <ul class="text-xs space-y-1">
+                          <li>• Total coordinates: <%= map_size(@scanner_data) %></li>
+                          <li>• Data format: 3x3 grid per coordinate</li>
+                          <li>• Coverage area: Dynamic based on navigation</li>
+                          <li>• Scan resolution: High precision</li>
+                        </ul>
+                      </div>
 
-                        <div class="bg-green-50 p-3 rounded">
-                          <h4 class="font-bold text-sm mb-2">🧭 Navigation Summary</h4>
-                          <ul class="text-xs space-y-1">
-                            <li>• Total commands: <%= length(@navigation_commands) %></li>
-                            <li>• Command types: forward, down, up</li>
-                            <li>• Starting position: (0, 0)</li>
-                            <li>• Expected duration: ~<%= trunc(length(@navigation_commands) * 10 / 1000) %> seconds</li>
-                          </ul>
-                        </div>
+                      <div class="bg-green-50 p-3 rounded">
+                        <h4 class="font-bold text-sm mb-2">🧭 Navigation Summary</h4>
+                        <ul class="text-xs space-y-1">
+                          <li>• Total commands: <%= length(@navigation_commands) %></li>
+                          <li>• Command types: forward, down, up</li>
+                          <li>• Starting position: (0, 0)</li>
+                          <li>• Expected duration: ~<%= trunc(length(@navigation_commands) * 10 / 1000) %> seconds</li>
+                        </ul>
                       </div>
                     </div>
 
-                    <div class="mt-4">
-                      <div class="bg-gray-100 p-3 rounded max-h-48 overflow-y-auto">
-                        <h4 class="font-bold text-sm mb-2">🔍 Scanner Data Sample:</h4>
-                        <pre class="text-xs"><%=
-                          if @current_step == :loading_data and @loading_progress < 100 do
-                            # Show progressively loaded coordinates
-                            @loaded_coordinates
-                            |> Enum.take(5)
-                            |> Enum.map(fn coord ->
-                              data = Map.get(@scanner_data, coord)
-                              "#{coord}: #{inspect(data)}"
-                            end)
-                            |> Enum.join("\n")
-                          else
-                            # Show first 5 coordinates when complete
-                            @scanner_data
-                            |> Enum.take(5)
-                            |> Enum.map(fn {coord, data} -> "#{coord}: #{inspect(data)}" end)
-                            |> Enum.join("\n")
-                          end
-                        %></pre>
-                        <div class="text-xs text-gray-500 mt-2">
-                          <%= if @current_step == :loading_data and @loading_progress < 100 do %>
-                            Showing <%= min(5, length(@loaded_coordinates)) %> of <%= length(@loaded_coordinates) %> loaded coordinates...
-                          <% else %>
-                            Showing 5 of <%= map_size(@scanner_data) %> total coordinates...
-                          <% end %>
-                        </div>
+                    <!-- Scanner Data Sample -->
+                    <div class="bg-gray-100 p-3 rounded max-h-48 overflow-y-auto">
+                      <h4 class="font-bold text-sm mb-2">🔍 Scanner Data Sample:</h4>
+                      <pre class="text-xs"><%=
+                        if @current_step == :loading_data and @loading_progress < 100 do
+                          # Show progressively loaded coordinates
+                          @loaded_coordinates
+                          |> Enum.take(5)
+                          |> Enum.map(fn coord ->
+                            data = Map.get(@scanner_data, coord)
+                            "#{coord}: #{inspect(data)}"
+                          end)
+                          |> Enum.join("\n")
+                        else
+                          # Show first 5 coordinates when complete
+                          @scanner_data
+                          |> Enum.take(5)
+                          |> Enum.map(fn {coord, data} -> "#{coord}: #{inspect(data)}" end)
+                          |> Enum.join("\n")
+                        end
+                      %></pre>
+                      <div class="text-xs text-gray-500 mt-2">
+                        <%= if @current_step == :loading_data and @loading_progress < 100 do %>
+                          Showing <%= min(5, length(@loaded_coordinates)) %> of <%= length(@loaded_coordinates) %> loaded coordinates...
+                        <% else %>
+                          Showing 5 of <%= map_size(@scanner_data) %> total coordinates...
+                        <% end %>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-
-            <!-- Process Information -->
-            <div class="card bg-base-100 shadow-xl">
-              <div class="card-body">
-                <h2 class="card-title">Process Information</h2>
-
-                <div class="space-y-4">
-              <%= case @current_step do %>
-                <% :intro -> %>
-                  <div class="alert bg-slate-50 border-slate-200 text-slate-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6 text-slate-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span>Ready to start the submarine navigation visualization!</span>
-                  </div>
-
-                <% :loading_data -> %>
-                  <div class="alert bg-gray-50 border-gray-200 text-gray-700">
-                    <span class="loading loading-spinner loading-sm text-gray-600"></span>
-                    <span>Data loading in progress... Check scanner information above for details.</span>
                   </div>
 
                 <% :navigating -> %>
                   <div class="alert bg-gray-50 border-gray-200 text-gray-700">
                     <span class="loading loading-spinner loading-sm text-gray-600"></span>
                     <span>🚢 Submarine is navigating through the ocean...</span>
+                  </div>
+
+                  <!-- Scanner Data Information Section -->
+                  <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Scanner Data Information</h3>
+
+                    <!-- Loading Progress Animation -->
+                    <div class="w-full bg-white p-4 rounded-lg border border-gray-200 mb-4">
+                      <div class="flex justify-between text-sm mb-2">
+                        <span class="text-gray-700">Data Loading Progress</span>
+                        <span class="text-gray-600">
+                          <%= length(@loaded_coordinates) %> coordinates loaded
+                        </span>
+                      </div>
+                      <progress class="progress w-full" value="100" max="100"></progress>
+                      <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span><%= length(@loaded_coordinates) %> of <%= map_size(@scanner_data) %> coordinates loaded</span>
+                        <span>Navigation in progress</span>
+                      </div>
+                    </div>
+
+                    <!-- Scanner Statistics -->
+                    <div class="stats stats-horizontal shadow-sm bg-white border border-gray-200 mb-4">
+                      <div class="stat bg-gray-50 rounded-lg">
+                        <div class="stat-title text-gray-600">Scanner Coordinates</div>
+                        <div class="stat-value text-gray-800"><%= map_size(@scanner_data) %></div>
+                        <div class="stat-desc text-gray-500">Available scan points</div>
+                      </div>
+                      <div class="stat bg-gray-50 rounded-lg">
+                        <div class="stat-title text-gray-600">Navigation Commands</div>
+                        <div class="stat-value text-gray-800"><%= length(@navigation_commands) %></div>
+                        <div class="stat-desc text-gray-500">Commands to execute</div>
+                      </div>
+                      <div class="stat bg-gray-50 rounded-lg">
+                        <div class="stat-title text-gray-600">Data Size</div>
+                        <div class="stat-value text-gray-800"><%= trunc(byte_size(Jason.encode!(@scanner_data)) / 1024) %>KB</div>
+                        <div class="stat-desc text-gray-500">Scanner data loaded</div>
+                      </div>
+                    </div>
+
+                    <!-- Scanner Data Summary -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div class="bg-blue-50 p-3 rounded">
+                        <h4 class="font-bold text-sm mb-2">📊 Scanner Data Summary</h4>
+                        <ul class="text-xs space-y-1">
+                          <li>• Total coordinates: <%= map_size(@scanner_data) %></li>
+                          <li>• Data format: 3x3 grid per coordinate</li>
+                          <li>• Coverage area: Dynamic based on navigation</li>
+                          <li>• Scan resolution: High precision</li>
+                        </ul>
+                      </div>
+
+                      <div class="bg-green-50 p-3 rounded">
+                        <h4 class="font-bold text-sm mb-2">🧭 Navigation Summary</h4>
+                        <ul class="text-xs space-y-1">
+                          <li>• Total commands: <%= length(@navigation_commands) %></li>
+                          <li>• Command types: forward, down, up</li>
+                          <li>• Starting position: (0, 0)</li>
+                          <li>• Expected duration: ~<%= trunc(length(@navigation_commands) * 10 / 1000) %> seconds</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <!-- Scanner Data Sample -->
+                    <div class="bg-gray-100 p-3 rounded max-h-48 overflow-y-auto">
+                      <h4 class="font-bold text-sm mb-2">🔍 Scanner Data Sample:</h4>
+                      <pre class="text-xs"><%=
+                        @scanner_data
+                        |> Enum.take(5)
+                        |> Enum.map(fn {coord, data} -> "#{coord}: #{inspect(data)}" end)
+                        |> Enum.join("\n")
+                      %></pre>
+                      <div class="text-xs text-gray-500 mt-2">
+                        Showing 5 of <%= map_size(@scanner_data) %> total coordinates...
+                      </div>
+                    </div>
                   </div>
 
                   <!-- Enhanced Visual Navigation -->
@@ -633,6 +692,82 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
                   <div class="alert bg-emerald-50 border-emerald-200 text-emerald-800">
                     <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     <span>🎉 Mission Complete! Map reconstruction finished with <%= map_size(@current_map) %> cells discovered.</span>
+                  </div>
+
+                  <!-- Scanner Data Information Section -->
+                  <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📊 Scanner Data Information</h3>
+
+                    <!-- Loading Progress Animation -->
+                    <div class="w-full bg-white p-4 rounded-lg border border-gray-200 mb-4">
+                      <div class="flex justify-between text-sm mb-2">
+                        <span class="text-gray-700">Data Loading Progress</span>
+                        <span class="text-gray-600">
+                          <%= length(@loaded_coordinates) %> coordinates loaded
+                        </span>
+                      </div>
+                      <progress class="progress w-full" value="100" max="100"></progress>
+                      <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span><%= length(@loaded_coordinates) %> of <%= map_size(@scanner_data) %> coordinates loaded</span>
+                        <span>Mission complete</span>
+                      </div>
+                    </div>
+
+                    <!-- Scanner Statistics -->
+                    <div class="stats stats-horizontal shadow-sm bg-white border border-gray-200 mb-4">
+                      <div class="stat bg-gray-50 rounded-lg">
+                        <div class="stat-title text-gray-600">Scanner Coordinates</div>
+                        <div class="stat-value text-gray-800"><%= map_size(@scanner_data) %></div>
+                        <div class="stat-desc text-gray-500">Available scan points</div>
+                      </div>
+                      <div class="stat bg-gray-50 rounded-lg">
+                        <div class="stat-title text-gray-600">Navigation Commands</div>
+                        <div class="stat-value text-gray-800"><%= length(@navigation_commands) %></div>
+                        <div class="stat-desc text-gray-500">Commands to execute</div>
+                      </div>
+                      <div class="stat bg-gray-50 rounded-lg">
+                        <div class="stat-title text-gray-600">Data Size</div>
+                        <div class="stat-value text-gray-800"><%= trunc(byte_size(Jason.encode!(@scanner_data)) / 1024) %>KB</div>
+                        <div class="stat-desc text-gray-500">Scanner data loaded</div>
+                      </div>
+                    </div>
+
+                    <!-- Scanner Data Summary -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div class="bg-blue-50 p-3 rounded">
+                        <h4 class="font-bold text-sm mb-2">📊 Scanner Data Summary</h4>
+                        <ul class="text-xs space-y-1">
+                          <li>• Total coordinates: <%= map_size(@scanner_data) %></li>
+                          <li>• Data format: 3x3 grid per coordinate</li>
+                          <li>• Coverage area: Dynamic based on navigation</li>
+                          <li>• Scan resolution: High precision</li>
+                        </ul>
+                      </div>
+
+                      <div class="bg-green-50 p-3 rounded">
+                        <h4 class="font-bold text-sm mb-2">🧭 Navigation Summary</h4>
+                        <ul class="text-xs space-y-1">
+                          <li>• Total commands: <%= length(@navigation_commands) %></li>
+                          <li>• Command types: forward, down, up</li>
+                          <li>• Starting position: (0, 0)</li>
+                          <li>• Expected duration: ~<%= trunc(length(@navigation_commands) * 10 / 1000) %> seconds</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <!-- Scanner Data Sample -->
+                    <div class="bg-gray-100 p-3 rounded max-h-48 overflow-y-auto">
+                      <h4 class="font-bold text-sm mb-2">🔍 Scanner Data Sample:</h4>
+                      <pre class="text-xs"><%=
+                        @scanner_data
+                        |> Enum.take(5)
+                        |> Enum.map(fn {coord, data} -> "#{coord}: #{inspect(data)}" end)
+                        |> Enum.join("\n")
+                      %></pre>
+                      <div class="text-xs text-gray-500 mt-2">
+                        Showing 5 of <%= map_size(@scanner_data) %> total coordinates...
+                      </div>
+                    </div>
                   </div>
 
                   <!-- Keep All Visual Elements + Final Results -->

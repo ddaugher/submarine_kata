@@ -18,6 +18,9 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
       |> assign(:command_index, 0)
       |> assign(:total_commands, 0)
       |> assign(:execution_error, nil)
+      |> assign(:loading_progress, 0)
+      |> assign(:loaded_coordinates, [])
+      |> assign(:loading_substep, 0)
 
     {:ok, socket}
   end
@@ -51,25 +54,37 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
   def handle_event("start_visualization", _params, socket) do
     IO.puts("🚀 Start Visualization button clicked!")
 
-    # Initialize the algorithm execution
-    socket =
-      socket
-      |> assign(:is_running, true)
-      |> assign(:current_step, :loading_data)
-      |> assign(:current_position, SubmarineKata.Submarine.new())
-      |> assign(:current_map, %{})
-      |> assign(:command_index, 0)
-      |> assign(:total_commands, length(socket.assigns.navigation_commands))
-      |> assign(:execution_error, nil)
+    # Prevent multiple simultaneous runs
+    if socket.assigns.is_running do
+      IO.puts("⚠️ Visualization already running, ignoring click")
+      {:noreply, socket}
+    else
+      # Initialize the algorithm execution
+      socket =
+        socket
+        |> assign(:is_running, true)
+        |> assign(:current_step, :loading_data)
+        |> assign(:step_index, 0)  # Reset step index to 0
+        |> assign(:current_position, SubmarineKata.Submarine.new())
+        |> assign(:current_map, %{})
+        |> assign(:command_index, 0)
+        |> assign(:total_commands, length(socket.assigns.navigation_commands))
+        |> assign(:execution_error, nil)
+        |> assign(:loading_progress, 0)
+        |> assign(:loaded_coordinates, [])
+        |> assign(:loading_substep, 0)
 
-    # Start the visualization process
-    send(self(), :next_step)
-    IO.puts("📤 Sent :next_step message")
-    {:noreply, socket}
+      # Start the visualization process
+      send(self(), :next_step)
+      IO.puts("📤 Sent :next_step message")
+      {:noreply, socket}
+    end
   end
 
   @impl true
   def handle_event("reset", _params, socket) do
+    IO.puts("🔄 Reset button clicked!")
+
     socket =
       socket
       |> assign(:current_step, :intro)
@@ -81,69 +96,111 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
       |> assign(:current_map, %{})
       |> assign(:command_index, 0)
       |> assign(:execution_error, nil)
+      |> assign(:loading_progress, 0)
+      |> assign(:loaded_coordinates, [])
+      |> assign(:loading_substep, 0)
 
     {:noreply, socket}
   end
 
   @impl true
   def handle_info(:next_step, socket) do
-    IO.puts("📥 Received :next_step message, current step_index: #{socket.assigns.step_index}")
+    IO.puts("📥 Received :next_step message, current step_index: #{socket.assigns.step_index}, is_running: #{socket.assigns.is_running}")
 
-    case socket.assigns.step_index do
-      0 ->
-        IO.puts("🔄 Step 0: Loading data")
-        # Data is already loaded, move to scanning initial position
-        socket =
-          socket
-          |> assign(:current_step, :loading_data)
-          |> assign(:step_index, 1)
+    # Only process if we're still running
+    if not socket.assigns.is_running do
+      IO.puts("⚠️ Process stopped, ignoring :next_step message")
+      {:noreply, socket}
+    else
+      case socket.assigns.step_index do
+        0 ->
+          IO.puts("🔄 Step 0: Loading data (substep #{socket.assigns.loading_substep})")
+          # Progressive loading of scanner data
+          case socket.assigns.loading_substep do
+            0 ->
+              # Start loading - initialize progress
+              socket =
+                socket
+                |> assign(:loading_progress, 0)
+                |> assign(:loaded_coordinates, [])
+                |> assign(:loading_substep, 1)
 
-        Process.send_after(self(), :next_step, 50)
-        {:noreply, socket}
+              Process.send_after(self(), :next_step, 300)
+              {:noreply, socket}
 
-      1 ->
-        IO.puts("🔄 Step 1: Scanning initial position")
-        # Scan at initial position (0, 0)
-        {position, map} = scan_at_position(socket.assigns.current_position, socket.assigns.current_map, socket.assigns.scanner_data)
+            1 ->
+              # Load first batch of coordinates
+              all_coords = Map.keys(socket.assigns.scanner_data)
+              batch_size = max(1, div(length(all_coords), 8))  # Load in 8 batches
+              current_loaded = socket.assigns.loaded_coordinates
+              new_coords = Enum.take(all_coords, length(current_loaded) + batch_size)
+              progress = min(100, trunc(length(new_coords) / length(all_coords) * 100))
 
-        socket =
-          socket
-          |> assign(:current_step, :navigating)
-          |> assign(:step_index, 2)
-          |> assign(:current_position, position)
-          |> assign(:current_map, map)
+              socket =
+                socket
+                |> assign(:loaded_coordinates, new_coords)
+                |> assign(:loading_progress, progress)
+                |> assign(:loading_substep, if(length(new_coords) >= length(all_coords), do: 2, else: 1))
 
-        Process.send_after(self(), :next_step, 50)
-        {:noreply, socket}
+              Process.send_after(self(), :next_step, 300)
+              {:noreply, socket}
 
-      2 ->
-        IO.puts("🔄 Step 2: Executing navigation command #{socket.assigns.command_index + 1}")
-        # Execute next navigation command
-        case execute_next_command(socket) do
-          {:ok, new_socket} ->
-            Process.send_after(self(), :next_step, 10)
-            {:noreply, new_socket}
-          {:complete, final_socket} ->
-            # Algorithm is complete, no need to send next_step
-            {:noreply, final_socket}
-          {:error, error_socket} ->
-            {:noreply, error_socket}
-        end
+            2 ->
+              # Loading complete - move to next step
+              socket =
+                socket
+                |> assign(:current_step, :loading_data)
+                |> assign(:step_index, 1)
+                |> assign(:loading_progress, 100)
 
-      3 ->
-        IO.puts("🔄 Step 3: Complete")
-        # Algorithm complete
-        socket =
-          socket
-          |> assign(:current_step, :complete)
-          |> assign(:step_index, 4)
-          |> assign(:is_running, false)
+              Process.send_after(self(), :next_step, 500)
+              {:noreply, socket}
+          end
 
-        {:noreply, socket}
+        1 ->
+          IO.puts("🔄 Step 1: Scanning initial position")
+          # Scan at initial position (0, 0)
+          {position, map} = scan_at_position(socket.assigns.current_position, socket.assigns.current_map, socket.assigns.scanner_data)
 
-      _ ->
-        # Final state - do nothing
-        {:noreply, socket}
+          socket =
+            socket
+            |> assign(:current_step, :navigating)
+            |> assign(:step_index, 2)
+            |> assign(:current_position, position)
+            |> assign(:current_map, map)
+
+          Process.send_after(self(), :next_step, 50)
+          {:noreply, socket}
+
+        2 ->
+          IO.puts("🔄 Step 2: Executing navigation command #{socket.assigns.command_index + 1}")
+          # Execute next navigation command
+          case execute_next_command(socket) do
+            {:ok, new_socket} ->
+              Process.send_after(self(), :next_step, 10)
+              {:noreply, new_socket}
+            {:complete, final_socket} ->
+              # Algorithm is complete, no need to send next_step
+              {:noreply, final_socket}
+            {:error, error_socket} ->
+              {:noreply, error_socket}
+          end
+
+        3 ->
+          IO.puts("🔄 Step 3: Complete")
+          # Algorithm complete
+          socket =
+            socket
+            |> assign(:current_step, :complete)
+            |> assign(:step_index, 4)
+            |> assign(:is_running, false)
+
+          {:noreply, socket}
+
+        _ ->
+          # Final state - do nothing
+          {:noreply, socket}
+      end
     end
   end
 
@@ -253,49 +310,94 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
 
           <!-- Content Area -->
           <div class="max-w-6xl mx-auto">
-            <!-- Process Information -->
-            <div class="card bg-base-100 shadow-xl">
-              <div class="card-body">
-                <h2 class="card-title">Process Information</h2>
+            <!-- Persistent Scanner Data Information -->
+            <%= if @step_index >= 0 do %>
+              <div class="card bg-base-100 shadow-xl mb-6">
+                <div class="card-body">
+                  <h2 class="card-title">📊 Scanner Data Information</h2>
 
-                <div class="space-y-4">
-              <%= case @current_step do %>
-                <% :intro -> %>
-                  <div class="alert bg-slate-50 border-slate-200 text-slate-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6 text-slate-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span>Ready to start the submarine navigation visualization!</span>
-                  </div>
-
-                <% :loading_data -> %>
-                  <div class="alert bg-gray-50 border-gray-200 text-gray-700">
-                    <span class="loading loading-spinner loading-sm text-gray-600"></span>
-                    <span>Loading scanner data from input files...</span>
-                  </div>
-
-                  <!-- Detailed Loading Activity -->
-                  <div class="space-y-4">
-                    <div class="steps steps-vertical lg:steps-horizontal">
-                      <div class="step step-primary text-gray-700">📁 Loading scanner_data.json</div>
-                      <div class="step step-primary text-gray-700">📋 Loading input_data.txt</div>
-                      <div class="step step-primary text-gray-700">🔍 Parsing navigation commands</div>
-                      <div class="step step-primary text-gray-700">🚢 Initializing submarine</div>
+                  <!-- Loading Status -->
+                  <%= if @current_step == :loading_data do %>
+                    <div class="alert bg-gray-50 border-gray-200 text-gray-700 mb-4">
+                      <span class="loading loading-spinner loading-sm text-gray-600"></span>
+                      <span>Loading scanner data from input files...</span>
                     </div>
+                  <% end %>
+
+                  <!-- Loading Progress Animation - Always Visible -->
+                  <div class="w-full bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+                    <div class="flex justify-between text-sm mb-2">
+                      <span class="text-gray-700">Data Loading Progress</span>
+                      <span class="text-gray-600">
+                        <%= if @loading_progress < 100 do %>
+                          Loading coordinates... <%= @loading_progress %>%
+                        <% else %>
+                          <%= length(@loaded_coordinates) %> coordinates loaded
+                        <% end %>
+                      </span>
+                    </div>
+                    <progress class="progress w-full" value={@loading_progress} max="100"></progress>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                      <span><%= length(@loaded_coordinates) %> of <%= map_size(@scanner_data) %> coordinates loaded</span>
+                      <span>
+                        <%= cond do %>
+                          <% @loading_progress < 100 and @current_step == :loading_data -> %>
+                            Parsing scanner data...
+                          <% @current_step == :loading_data -> %>
+                            Ready to navigate
+                          <% @current_step == :navigating -> %>
+                            Navigation in progress
+                          <% @current_step == :reconstructing -> %>
+                            Map reconstruction in progress
+                          <% true -> %>
+                            Mission complete
+                        <% end %>
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Detailed Scanner Information -->
+                  <div class="space-y-4">
 
                     <div class="stats stats-horizontal shadow-sm bg-white border border-gray-200">
                       <div class="stat bg-gray-50 rounded-lg">
                         <div class="stat-title text-gray-600">Scanner Coordinates</div>
-                        <div class="stat-value text-gray-800"><%= map_size(@scanner_data) %></div>
-                        <div class="stat-desc text-gray-500">Available scan points</div>
+                        <div class={["stat-value text-gray-800", if(@current_step == :loading_data and @loading_progress < 100, do: "animate-pulse")]}>
+                          <%= if @current_step == :loading_data and @loading_progress < 100 do %>
+                            <%= length(@loaded_coordinates) %> / <%= map_size(@scanner_data) %>
+                          <% else %>
+                            <%= map_size(@scanner_data) %>
+                          <% end %>
+                        </div>
+                        <div class="stat-desc text-gray-500">
+                          <%= if @current_step == :loading_data and @loading_progress < 100 do %>
+                            Loading...
+                          <% else %>
+                            Available scan points
+                          <% end %>
+                        </div>
                       </div>
                       <div class="stat bg-gray-50 rounded-lg">
                         <div class="stat-title text-gray-600">Navigation Commands</div>
-                        <div class="stat-value text-gray-800"><%= length(@navigation_commands) %></div>
+                        <div class={["stat-value text-gray-800", if(@current_step == :loading_data and @loading_progress < 100, do: "animate-pulse")]}><%= length(@navigation_commands) %></div>
                         <div class="stat-desc text-gray-500">Commands to execute</div>
                       </div>
                       <div class="stat bg-gray-50 rounded-lg">
                         <div class="stat-title text-gray-600">Data Size</div>
-                        <div class="stat-value text-gray-800"><%= trunc(byte_size(Jason.encode!(@scanner_data)) / 1024) %>KB</div>
-                        <div class="stat-desc text-gray-500">Scanner data loaded</div>
+                        <div class={["stat-value text-gray-800", if(@current_step == :loading_data and @loading_progress < 100, do: "animate-pulse")]}>
+                          <%= if @current_step == :loading_data and @loading_progress < 100 do %>
+                            <%= trunc(byte_size(Jason.encode!(Map.take(@scanner_data, @loaded_coordinates))) / 1024) %>KB
+                          <% else %>
+                            <%= trunc(byte_size(Jason.encode!(@scanner_data)) / 1024) %>KB
+                          <% end %>
+                        </div>
+                        <div class="stat-desc text-gray-500">
+                          <%= if @current_step == :loading_data and @loading_progress < 100 do %>
+                            Partial data loaded
+                          <% else %>
+                            Scanner data loaded
+                          <% end %>
+                        </div>
                       </div>
                     </div>
 
@@ -325,18 +427,56 @@ defmodule SubmarineKataWeb.SubmarineKataLive do
 
                     <div class="mt-4">
                       <div class="bg-gray-100 p-3 rounded max-h-48 overflow-y-auto">
-                        <h4 class="font-bold text-sm mb-2">🔍 Scanner Data Sample (First 5 coordinates):</h4>
+                        <h4 class="font-bold text-sm mb-2">🔍 Scanner Data Sample:</h4>
                         <pre class="text-xs"><%=
-                          @scanner_data
-                          |> Enum.take(5)
-                          |> Enum.map(fn {coord, data} -> "#{coord}: #{inspect(data)}" end)
-                          |> Enum.join("\n")
+                          if @current_step == :loading_data and @loading_progress < 100 do
+                            # Show progressively loaded coordinates
+                            @loaded_coordinates
+                            |> Enum.take(5)
+                            |> Enum.map(fn coord ->
+                              data = Map.get(@scanner_data, coord)
+                              "#{coord}: #{inspect(data)}"
+                            end)
+                            |> Enum.join("\n")
+                          else
+                            # Show first 5 coordinates when complete
+                            @scanner_data
+                            |> Enum.take(5)
+                            |> Enum.map(fn {coord, data} -> "#{coord}: #{inspect(data)}" end)
+                            |> Enum.join("\n")
+                          end
                         %></pre>
                         <div class="text-xs text-gray-500 mt-2">
-                          Showing 5 of <%= map_size(@scanner_data) %> total coordinates...
+                          <%= if @current_step == :loading_data and @loading_progress < 100 do %>
+                            Showing <%= min(5, length(@loaded_coordinates)) %> of <%= length(@loaded_coordinates) %> loaded coordinates...
+                          <% else %>
+                            Showing 5 of <%= map_size(@scanner_data) %> total coordinates...
+                          <% end %>
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+
+            <!-- Process Information -->
+            <div class="card bg-base-100 shadow-xl">
+              <div class="card-body">
+                <h2 class="card-title">Process Information</h2>
+
+                <div class="space-y-4">
+              <%= case @current_step do %>
+                <% :intro -> %>
+                  <div class="alert bg-slate-50 border-slate-200 text-slate-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6 text-slate-500"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>Ready to start the submarine navigation visualization!</span>
+                  </div>
+
+                <% :loading_data -> %>
+                  <div class="alert bg-gray-50 border-gray-200 text-gray-700">
+                    <span class="loading loading-spinner loading-sm text-gray-600"></span>
+                    <span>Data loading in progress... Check scanner information above for details.</span>
                   </div>
 
                 <% :navigating -> %>
